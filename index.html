@@ -1,0 +1,1835 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python OOP 강의</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #F7F7F4;
+  --paper: #FFFFFF;
+  --ink: #16171B;
+  --ink-2: #4A4D56;
+  --ink-3: #8C8F98;
+  --line: #E6E5E0;
+
+  --accent: #4F46E5;
+  --accent-2: #6366F1;
+  --accent-soft: #EEEFFE;
+
+  --proc: #B45309;
+  --proc-soft: #FDF3E6;
+  --func: #0F766E;
+  --func-soft: #E6F5F3;
+
+  --bad: #D9363E;
+  --bad-soft: #FDEEEE;
+  --good: #0B8A5F;
+  --good-soft: #E6F6EF;
+
+  --code-bg: #16181D;
+  --code-ink: #E4E6EB;
+
+  --sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Pretendard Variable", monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: #0E0F12;
+  font-family: var(--sans);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+  overflow: hidden;
+}
+code, .mono { font-family: var(--mono); }
+
+/* ───────── Deck & slide canvas (1280 × 720) ───────── */
+.slide {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 1280px; height: 720px;
+  transform: translate(-50%, -50%) scale(var(--scale, 1));
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  padding: 46px 72px 60px;
+  overflow: hidden;
+  opacity: 0; visibility: hidden;
+  transition: opacity .35s ease, visibility .35s;
+}
+.slide.active { opacity: 1; visibility: visible; }
+
+.foot {
+  position: absolute; left: 72px; right: 72px; bottom: 22px;
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: var(--ink-3); letter-spacing: .02em;
+}
+.foot b { color: var(--ink-2); font-weight: 600; }
+
+/* progress + nav */
+.progress { position: fixed; left: 0; top: 0; height: 3px; background: var(--accent-2); transition: width .3s ease; z-index: 10; }
+.nav {
+  position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 10;
+  display: flex; gap: 6px; opacity: 0; transition: opacity .2s;
+}
+body:hover .nav { opacity: 1; }
+.nav button {
+  width: 34px; height: 34px; border-radius: 10px; border: 0; cursor: pointer;
+  background: rgba(255,255,255,.12); color: #fff; font-size: 16px;
+  backdrop-filter: blur(6px);
+}
+.nav button:hover { background: rgba(255,255,255,.22); }
+
+/* ───────── Typography ───────── */
+.kicker {
+  font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 10px;
+}
+.title { font-size: 34px; font-weight: 800; letter-spacing: -0.025em; line-height: 1.25; }
+.lead { font-size: 18px; color: var(--ink-2); margin-top: 8px; line-height: 1.55; }
+.hd { margin-bottom: 22px; }
+.hd.tight { margin-bottom: 16px; }
+em.mark { font-style: normal; color: var(--accent); }
+.ic { font-family: var(--mono); font-size: .88em; background: #ECECF4; color: #3D3A9E; padding: 1px 6px; border-radius: 6px; }
+
+/* ───────── Cards & chips ───────── */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 22px 24px;
+  box-shadow: 0 1px 2px rgba(20,20,30,.04), 0 10px 28px -16px rgba(20,20,30,.12);
+}
+.chip {
+  display: inline-flex; align-items: center;
+  font-size: 12.5px; font-weight: 600;
+  padding: 4px 10px; border-radius: 999px;
+  background: var(--accent-soft); color: var(--accent);
+}
+.chip.gray { background: #EFEFEA; color: var(--ink-2); }
+.chip.proc { background: var(--proc-soft); color: var(--proc); }
+.chip.func { background: var(--func-soft); color: var(--func); }
+.chip.good { background: var(--good-soft); color: var(--good); }
+.chip.bad  { background: var(--bad-soft); color: var(--bad); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.fill { flex: 1; min-height: 0; }
+
+/* ───────── Code ───────── */
+pre.code {
+  background: var(--code-bg); color: var(--code-ink);
+  border-radius: 12px;
+  padding: 16px 0;
+  font-family: var(--mono); font-size: 15px; line-height: 1.6;
+  white-space: pre; overflow: hidden; tab-size: 4;
+  font-variant-ligatures: none;
+}
+pre.code .ln { display: block; padding: 0 20px; }
+pre.code .ln.hl { background: rgba(129,140,248,.16); box-shadow: inset 3px 0 #818CF8; }
+.bad  pre.code .ln.hl { background: rgba(244,63,94,.16); box-shadow: inset 3px 0 #F43F5E; }
+.good pre.code .ln.hl { background: rgba(16,185,129,.15); box-shadow: inset 3px 0 #10B981; }
+.tk-k { color: #C4A7FF; }
+.tk-s { color: #A6E3A1; }
+.tk-c { color: #858C98; }
+.tk-n { color: #FFB38A; }
+.tk-f { color: #7CC4FF; }
+.tk-t { color: #FFD580; }
+.tk-v { color: #FF8FA3; }
+.tk-d, .tk-b { color: #7EE0D6; }
+
+/* ───────── Compare layout (절차 vs 객체 / 위반 vs 준수) ───────── */
+.cmp { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.pane { display: flex; flex-direction: column; min-height: 0; }
+.pane pre.code { flex: 1; min-height: 0; font-size: 16px; }
+.pane-hd { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 700; padding: 5px 12px; border-radius: 8px;
+}
+.badge.bad  { background: var(--bad-soft); color: var(--bad); }
+.badge.good { background: var(--good-soft); color: var(--good); }
+.pane-note { font-size: 13.5px; color: var(--ink-3); }
+
+.verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 14px; }
+.v {
+  display: flex; gap: 12px; align-items: flex-start;
+  border-radius: 12px; padding: 12px 16px;
+  font-size: 15px; line-height: 1.5; color: var(--ink-2);
+}
+.v.bad  { background: var(--bad-soft); }
+.v.good { background: var(--good-soft); }
+.v-label { flex: none; font-weight: 800; font-size: 13px; padding-top: 2px; }
+.v.bad .v-label  { color: var(--bad); }
+.v.good .v-label { color: var(--good); }
+.v b { color: var(--ink); font-weight: 700; }
+
+/* ───────── Title slide ───────── */
+.s-title { padding: 0 88px; justify-content: center; }
+.s-title .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; }
+.s-title h1 { font-size: 60px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.15; }
+.s-title h1 span { color: var(--accent); }
+.s-title .sub { font-size: 21px; color: var(--ink-2); margin-top: 20px; line-height: 1.55; }
+.s-title .meta { margin-top: 40px; display: flex; gap: 8px; }
+.s-title .hint { position: absolute; left: 88px; bottom: 30px; font-size: 13px; color: var(--ink-3); }
+.kbd { display: inline-block; font-family: var(--mono); font-size: 11.5px; padding: 1px 7px; border: 1px solid #D8D7D1; border-bottom-width: 2px; border-radius: 6px; background: #fff; color: var(--ink-2); }
+.window { border-radius: 16px; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(30,30,60,.45); }
+.window .bar { background: #23252C; height: 34px; display: flex; align-items: center; gap: 7px; padding: 0 14px; }
+.window .bar i { width: 11px; height: 11px; border-radius: 50%; background: #3A3D46; display: block; }
+.window .bar i:nth-child(1) { background: #FF6B6B; } .window .bar i:nth-child(2) { background: #FFC94D; } .window .bar i:nth-child(3) { background: #3DD68C; }
+.window pre.code { border-radius: 0; padding: 22px 0; font-size: 17px; }
+.window pre.code .ln { padding: 0 26px; }
+
+/* ───────── Divider ───────── */
+.s-divider { justify-content: center; padding: 0 110px; }
+.s-divider .no { font-size: 120px; font-weight: 800; letter-spacing: -0.05em; line-height: 1; color: var(--accent); }
+.s-divider h2 { font-size: 50px; font-weight: 800; letter-spacing: -0.03em; margin-top: 18px; }
+.s-divider p { font-size: 20px; color: var(--ink-2); margin-top: 14px; }
+.s-divider .topics { display: flex; gap: 8px; margin-top: 30px; }
+.s-divider .rule { width: 56px; height: 4px; border-radius: 2px; background: var(--accent); margin-top: 26px; }
+
+/* ───────── Agenda ───────── */
+.agenda { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+.agenda .item { display: flex; gap: 18px; align-items: center; padding: 18px 22px; }
+.agenda .num { font-size: 26px; font-weight: 800; color: var(--accent); width: 44px; flex: none; letter-spacing: -0.03em; }
+.agenda h3 { font-size: 19px; font-weight: 700; }
+.agenda p { font-size: 14.5px; color: var(--ink-3); margin-top: 3px; }
+.agenda .appx .num { color: var(--ink-3); }
+
+/* ───────── Paradigm cards ───────── */
+.para { display: grid; grid-template-columns: 1fr 1.12fr 1fr; gap: 18px; align-items: stretch; flex: 1; min-height: 0; }
+.para .card { display: flex; flex-direction: column; gap: 12px; padding: 22px; position: relative; }
+.para .en { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.para h3 { font-size: 23px; font-weight: 800; letter-spacing: -0.02em; margin-top: -6px; }
+.para .desc { font-size: 15px; color: var(--ink-2); line-height: 1.5; }
+.para pre.code { font-size: 13.5px; padding: 14px 0; flex: 1; }
+.para pre.code .ln { padding: 0 16px; }
+.para .analogy { font-size: 13.5px; color: var(--ink-3); border-top: 1px dashed var(--line); padding-top: 10px; }
+.para .analogy b { color: var(--ink-2); }
+.para .proc .en { color: var(--proc); }
+.para .func .en { color: var(--func); }
+.para .oop { border: 2px solid var(--accent); box-shadow: 0 24px 48px -24px rgba(79,70,229,.45); transform: translateY(-6px); }
+.para .oop .en { color: var(--accent); }
+.para .oop .star {
+  position: absolute; top: -13px; right: 18px;
+  background: var(--accent); color: #fff; font-size: 12px; font-weight: 700;
+  padding: 5px 11px; border-radius: 999px;
+}
+
+/* ───────── Class concept ───────── */
+.mold { display: grid; grid-template-columns: 210px 70px 1fr; align-items: center; }
+.mold .blue { border: 2px dashed var(--accent); background: var(--accent-soft); border-radius: 14px; padding: 18px; text-align: center; }
+.mold .blue .t { font-family: var(--mono); font-weight: 600; color: var(--accent); font-size: 18px; }
+.mold .blue p { font-size: 13px; color: var(--ink-2); margin-top: 6px; }
+.mold svg { width: 70px; height: 150px; }
+.mold .objs { display: flex; flex-direction: column; gap: 12px; }
+.mold .obj { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; font-size: 13.5px; box-shadow: 0 6px 16px -10px rgba(0,0,0,.15); }
+.mold .obj .t { font-family: var(--mono); font-weight: 600; font-size: 14px; }
+.mold .obj span { color: var(--ink-3); font-family: var(--mono); font-size: 12.5px; }
+.def { display: grid; grid-template-columns: auto 1fr; gap: 10px 14px; font-size: 16px; align-items: baseline; }
+.def dt { font-weight: 800; }
+.def dd { color: var(--ink-2); line-height: 1.5; }
+.note {
+  background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+  border-radius: 10px; padding: 12px 16px; font-size: 14.5px; color: var(--ink-2); line-height: 1.55;
+}
+
+/* term list */
+.terms { display: flex; flex-direction: column; gap: 16px; }
+.terms li { list-style: none; display: grid; grid-template-columns: 34px 112px 1fr; align-items: baseline; font-size: 16.5px; }
+.terms .n { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; display: inline-grid; place-items: center; }
+.terms .k { font-weight: 700; font-family: var(--mono); font-size: 15.5px; }
+.terms .d { color: var(--ink-2); line-height: 1.45; }
+
+/* mini cards (4 pillars, toolbox) */
+.mini { display: flex; flex-direction: column; gap: 8px; padding: 18px 20px; }
+.mini .top { display: flex; align-items: baseline; gap: 10px; }
+.mini .idx { font-size: 13px; font-weight: 800; color: var(--accent); }
+.mini h3 { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+.mini .top .src { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+.mini h3 small { font-size: 13px; color: var(--ink-3); font-weight: 600; margin-left: 4px; letter-spacing: 0; }
+.mini p { font-size: 14.5px; color: var(--ink-2); }
+.mini pre.code { font-size: 14.5px; padding: 12px 0; margin-top: 4px; }
+.mini pre.code .ln { padding: 0 16px; }
+.compact .mini pre.code { font-size: 13.5px; }
+
+/* problem table */
+.ptable { display: flex; flex-direction: column; gap: 10px; }
+.prow { min-height: 70px; display: grid; grid-template-columns: 54px 210px 1fr 220px; align-items: center; gap: 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 14px 20px; }
+.prow .n { font-size: 22px; font-weight: 800; color: var(--bad); letter-spacing: -0.03em; }
+.prow h3 { font-size: 18px; font-weight: 700; }
+.prow p { font-size: 15px; color: var(--ink-2); }
+.prow .sol { justify-self: end; }
+.prow .sol .chip { font-size: 13px; }
+
+/* numbered reason cards */
+.reason { padding: 22px 22px; display: flex; flex-direction: column; gap: 10px; }
+.reason .n { font-size: 30px; font-weight: 800; color: var(--accent); letter-spacing: -0.04em; line-height: 1; }
+.reason h3 { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+.reason p { font-size: 15.5px; color: var(--ink-2); line-height: 1.6; }
+.reason .q { margin-top: auto; font-size: 13.5px; color: var(--accent); background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; line-height: 1.5; }
+.reason .q .mono { font-size: 12.5px; }
+.banner {
+  margin-top: 18px; border-radius: 14px; padding: 16px 22px;
+  background: var(--ink); color: #fff; font-size: 17px; font-weight: 600;
+}
+.banner .arrow { color: #A5B4FC; margin-right: 10px; }
+
+/* split: code + side explanation */
+.split { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.35fr 1fr; gap: 28px; }
+.split.even { grid-template-columns: 1fr 1fr; }
+.split.side-left { grid-template-columns: 330px 1fr; }
+.split > pre.code { min-height: 0; font-size: 16px; }
+.points { display: flex; flex-direction: column; gap: 12px; }
+.point { display: flex; gap: 12px; align-items: flex-start; font-size: 16px; line-height: 1.55; color: var(--ink-2); }
+.point .dot { flex: none; width: 24px; height: 24px; border-radius: 7px; background: var(--accent-soft); color: var(--accent); font-weight: 800; font-size: 13px; display: grid; place-items: center; margin-top: 1px; }
+.point b { color: var(--ink); }
+
+/* SOLID */
+.solid { min-height: 0; }
+.solid .card { display: flex; flex-direction: column; gap: 10px; padding: 22px 20px; }
+.solid .L { font-size: 80px; font-weight: 800; color: var(--accent); line-height: 1; letter-spacing: -0.04em; }
+.solid h3 { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+.solid .en { font-size: 12.5px; color: var(--ink-3); font-weight: 600; margin-top: -6px; }
+.solid p { font-size: 16px; color: var(--ink-2); line-height: 1.55; }
+.solid .q { margin-top: auto; min-height: 64px; font-size: 14.5px; color: var(--accent); background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; line-height: 1.5; }
+
+.shd { display: flex; align-items: center; gap: 18px; margin-bottom: 16px; }
+.shd .letter {
+  flex: none; width: 66px; height: 66px; border-radius: 16px; background: var(--accent); color: #fff;
+  font-size: 38px; font-weight: 800; display: grid; place-items: center; letter-spacing: -0.04em;
+}
+.shd .title { font-size: 30px; }
+.shd .title small { font-size: 16px; color: var(--ink-3); font-weight: 600; margin-left: 8px; letter-spacing: 0; }
+.shd .lead { font-size: 16.5px; margin-top: 4px; }
+
+/* summary table */
+table.sum { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; font-size: 15.5px; }
+table.sum th { text-align: left; font-size: 12.5px; letter-spacing: .06em; color: var(--ink-3); font-weight: 700; padding: 13px 16px; background: #FAFAF8; border-bottom: 1px solid var(--line); }
+table.sum td { padding: 20px 16px; border-bottom: 1px solid var(--line); color: var(--ink-2); line-height: 1.45; vertical-align: middle; }
+table.sum tr:last-child td { border-bottom: 0; }
+table.sum td.p { font-weight: 800; color: var(--ink); white-space: nowrap; }
+table.sum td.p span { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--accent); color: #fff; margin-right: 10px; }
+table.sum td.bad { color: var(--bad); }
+table.sum td.good { color: var(--good); }
+
+/* takeaways */
+.take { display: flex; flex-direction: column; gap: 14px; }
+.take .row { display: grid; grid-template-columns: 60px 1fr; align-items: center; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 20px 26px; }
+.take .n { font-size: 24px; font-weight: 800; color: var(--accent); }
+.take p { font-size: 20px; color: var(--ink-2); }
+.take p b { color: var(--ink); }
+
+/* pattern index */
+.pidx .col h4 { font-size: 13px; font-weight: 700; letter-spacing: .08em; color: var(--ink-3); margin-bottom: 10px; text-transform: uppercase; }
+.pidx .col { display: flex; flex-direction: column; gap: 10px; }
+.pidx .pi { padding: 18px 22px; }
+.pidx .pi h3 { font-size: 19px; font-weight: 800; }
+.pidx .pi p { font-size: 15px; color: var(--ink-2); margin-top: 3px; }
+
+/* pattern slide */
+.pat { flex: 1; min-height: 0; display: grid; grid-template-columns: 330px 1fr; gap: 28px; }
+.pat aside { display: flex; flex-direction: column; gap: 18px; }
+.pat aside h4 { font-size: 12.5px; letter-spacing: .08em; color: var(--ink-3); font-weight: 700; margin-bottom: 6px; text-transform: uppercase; }
+.pat aside p, .pat aside li { font-size: 15px; color: var(--ink-2); line-height: 1.55; }
+.pat aside ul { padding-left: 18px; }
+.pat > pre.code { font-size: 17px; }
+.pat aside .intent { font-size: 18px; color: var(--ink); font-weight: 600; line-height: 1.5; }
+
+/* end */
+.s-end { justify-content: center; align-items: center; text-align: center; }
+.s-end h2 { font-size: 64px; font-weight: 800; letter-spacing: -0.04em; }
+.s-end p { font-size: 20px; color: var(--ink-2); margin-top: 14px; }
+.s-end .refs { margin-top: 44px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* ───────── Print: one slide per page ───────── */
+@media print {
+  @page { size: 1280px 720px; margin: 0; }
+  html, body { background: #fff; overflow: visible; height: auto; }
+  .slide { position: relative; left: auto; top: auto; transform: none; opacity: 1; visibility: visible; page-break-after: always; break-after: page; transition: none; }
+  .progress, .nav { display: none; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="nav"><button id="prev" aria-label="이전">‹</button><button id="next" aria-label="다음">›</button><button id="fs" aria-label="전체화면">⤢</button></div>
+
+<main class="deck">
+
+<!-- ═══════════════ 표지 ═══════════════ -->
+<section class="slide s-title" data-foot="none">
+  <div class="wrap">
+    <div>
+      <div class="kicker">Python · Object-Oriented Programming</div>
+      <h1>파이썬<br><span>객체 지향</span> 프로그래밍</h1>
+      <p class="sub">Class 기초부터 SOLID 원칙, 디자인 패턴까지<br>— 왜 쓰는지, 어떻게 잘 쓰는지</p>
+      <div class="meta"><span class="chip">Class</span><span class="chip">SOLID</span><span class="chip">Design Pattern</span><span class="chip gray">AI Agent 시대의 OOP</span></div>
+    </div>
+    <div class="window">
+      <div class="bar"><i></i><i></i><i></i></div>
+<pre class="code"><code>
+class Lecture:
+    topic = "OOP"
+
+    def __init__(self, you):
+        self.student = you
+
+    def start(self):
+        return "Let's go!"
+</code></pre>
+    </div>
+  </div>
+  <div class="hint"><span class="kbd">←</span> <span class="kbd">→</span> 이동 &nbsp;·&nbsp; <span class="kbd">F</span> 전체화면</div>
+</section>
+
+<!-- ═══════════════ 목차 ═══════════════ -->
+<section class="slide">
+  <div class="hd">
+    <div class="kicker">Agenda</div>
+    <h2 class="title">오늘 다룰 내용</h2>
+  </div>
+  <div class="agenda">
+    <div class="card item"><div class="num">01</div><div><h3>프로그래밍 패러다임</h3><p>절차 · 객체 · 함수형을 한눈에 비교</p></div></div>
+    <div class="card item"><div class="num">02</div><div><h3>Class 기초</h3><p>class와 객체, OOP 4대 특성, 필수 문법</p></div></div>
+    <div class="card item"><div class="num">03</div><div><h3>왜 OOP인가</h3><p>절차 지향의 5가지 문제 · AI Agent 시대의 OOP</p></div></div>
+    <div class="card item"><div class="num">04</div><div><h3>SOLID 원칙</h3><p>OOP의 장점을 지켜주는 5가지 설계 원칙</p></div></div>
+    <div class="card item"><div class="num">05</div><div><h3>정리</h3><p>균형 감각과 핵심 요약</p></div></div>
+    <div class="card item appx"><div class="num">A</div><div><h3>Appendix · 디자인 패턴</h3><p>자주 쓰는 패턴 7가지 구현 예제</p></div></div>
+  </div>
+</section>
+
+<!-- ═══════════════ PART 1 ═══════════════ -->
+<section class="slide s-divider" data-foot="Part 1 · 패러다임">
+  <div class="no">01</div>
+  <h2>프로그래밍 패러다임</h2>
+  <p>코드를 ‘어떻게 구성할 것인가’에 대한 세 가지 관점</p>
+  <div class="rule"></div>
+</section>
+
+<section class="slide" data-foot="Part 1 · 패러다임">
+  <div class="hd tight">
+    <div class="kicker">Part 1 · 패러다임</div>
+    <h2 class="title">같은 ‘입금’ 기능, 세 가지 방식</h2>
+  </div>
+  <div class="para">
+    <div class="card proc">
+      <div class="en">Procedural</div>
+      <h3>절차 지향</h3>
+      <p class="desc">명령을 <b>위에서 아래로</b> 순서대로 실행한다. 데이터와 함수가 따로 존재.</p>
+<pre class="code"><code>
+balance = 0
+
+def deposit(amount):
+    global balance
+    balance += amount
+
+deposit(100)
+</code></pre>
+      <div class="chips"><span class="chip proc">순서</span><span class="chip proc">전역 상태</span><span class="chip proc">데이터·함수 분리</span></div>
+      <div class="analogy"><b>비유</b> · 레시피 — 1번부터 차례대로</div>
+    </div>
+    <div class="card oop">
+      <span class="star">오늘의 주제</span>
+      <div class="en">Object-Oriented</div>
+      <h3>객체 지향</h3>
+      <p class="desc"><b>데이터 + 행동</b>을 하나의 객체로 묶고, 객체끼리 협력한다.</p>
+<pre class="code" data-hl="1,5-6"><code>
+class Account:
+    def __init__(self):
+        self.balance = 0
+
+    def deposit(self, amount):
+        self.balance += amount
+
+acc = Account()
+acc.deposit(100)
+</code></pre>
+      <div class="chips"><span class="chip">객체</span><span class="chip">캡슐화</span><span class="chip">재사용 · 확장</span></div>
+      <div class="analogy"><b>비유</b> · 팀 — 각자 역할을 가진 사람들이 협력</div>
+    </div>
+    <div class="card func">
+      <div class="en">Functional</div>
+      <h3>함수형</h3>
+      <p class="desc">상태를 바꾸지 않고, <b>입력 → 출력</b>인 순수 함수를 조합한다.</p>
+<pre class="code"><code>
+def deposit(balance, amount):
+    return balance + amount
+
+b0 = 0
+b1 = deposit(b0, 100)
+# b0는 그대로, 새 값 b1
+</code></pre>
+      <div class="chips"><span class="chip func">순수 함수</span><span class="chip func">불변성</span><span class="chip func">부수효과 X</span></div>
+      <div class="analogy"><b>비유</b> · 공장 라인 — 넣으면 결과가 나온다</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PART 2 ═══════════════ -->
+<section class="slide s-divider" data-foot="Part 2 · Class 기초">
+  <div class="no">02</div>
+  <h2>Class 기초</h2>
+  <p>객체 지향의 출발점, class와 객체 이해하기</p>
+  <div class="rule"></div>
+</section>
+
+<section class="slide" data-foot="Part 2 · Class 기초">
+  <div class="hd">
+    <div class="kicker">Part 2 · Class 기초</div>
+    <h2 class="title">Class란? — 객체를 찍어내는 <em class="mark">설계도</em></h2>
+  </div>
+  <div class="split even">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div class="mold">
+        <div class="blue"><div class="t">class Dog</div><p>설계도 (붕어빵 틀)<br>이름 · 짖기</p></div>
+        <svg viewBox="0 0 70 150" fill="none" stroke="#4F46E5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 75 C 36 75, 36 32, 62 32"/><path d="M55 26 L62 32 L55 38"/>
+          <path d="M6 75 C 36 75, 36 118, 62 118"/><path d="M55 112 L62 118 L55 124"/>
+        </svg>
+        <div class="objs">
+          <div class="obj"><div class="t">Dog("초코")</div><span>name = "초코"</span></div>
+          <div class="obj"><div class="t">Dog("보리")</div><span>name = "보리"</span></div>
+        </div>
+      </div>
+      <dl class="def">
+        <dt>Class</dt><dd>데이터(속성)와 행동(메서드)을 정의한 <b>설계도</b></dd>
+        <dt>객체</dt><dd>설계도로 만든 <b>실체</b>. ‘인스턴스’라고도 부른다</dd>
+      </dl>
+      <div class="note">사실 파이썬에서는 <b>모든 것이 객체</b>입니다. <span class="ic">"hi".upper()</span>의 <span class="ic">"hi"</span>는 <span class="ic">str</span> 클래스의 인스턴스예요.</div>
+    </div>
+<pre class="code" data-hl="1,9-10"><code>
+class Dog:                    # 설계도
+    def __init__(self, name):
+        self.name = name      # 데이터
+
+    def bark(self):           # 행동
+        return f"{self.name}: 멍멍!"
+
+
+a = Dog("초코")               # 객체 생성
+b = Dog("보리")
+
+a.bark()   # '초코: 멍멍!'
+b.bark()   # '보리: 멍멍!'
+</code></pre>
+  </div>
+</section>
+
+<section class="slide" data-foot="Part 2 · Class 기초">
+  <div class="hd">
+    <div class="kicker">Part 2 · Class 기초</div>
+    <h2 class="title">Class의 구성 요소</h2>
+  </div>
+  <div class="split">
+<pre class="code"><code>
+class Dog:                          # (1)
+    species = "개"                  # 클래스 속성 (공유)
+
+    def __init__(self, name, age):  # (2) (3)
+        self.name = name            # (4)
+        self.age = age
+
+    def bark(self):                 # (5)
+        return f"{self.name}: 멍멍!"
+
+
+choco = Dog("초코", 3)              # (6)
+
+choco.bark()      # '초코: 멍멍!'
+choco.age         # 3
+choco.species     # '개'
+</code></pre>
+    <ul class="terms" style="justify-content:center">
+      <li><span class="n">1</span><span class="k">class</span><span class="d">새로운 타입(설계도)을 정의</span></li>
+      <li><span class="n">2</span><span class="k">__init__</span><span class="d">객체가 만들어질 때 자동 실행되는 초기화 메서드</span></li>
+      <li><span class="n">3</span><span class="k">self</span><span class="d">만들어진 ‘그 객체 자신’. 메서드의 첫 번째 인자</span></li>
+      <li><span class="n">4</span><span class="k">속성</span><span class="d">객체가 가진 데이터 — <span class="ic">self.name</span></span></li>
+      <li><span class="n">5</span><span class="k">메서드</span><span class="d">객체가 할 수 있는 행동 — <span class="ic">bark()</span></span></li>
+      <li><span class="n">6</span><span class="k">인스턴스</span><span class="d">클래스로 찍어낸 실제 객체 — <span class="ic">Dog("초코", 3)</span></span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide" data-foot="Part 2 · Class 기초">
+  <div class="hd tight">
+    <div class="kicker">Part 2 · Class 기초</div>
+    <h2 class="title">객체 지향의 4대 특성</h2>
+  </div>
+  <div class="grid2 fill">
+    <div class="card mini">
+      <div class="top"><span class="idx">01</span><h3>캡슐화 <small>Encapsulation</small></h3></div>
+      <p>데이터와 기능을 묶고, 내부는 숨긴다.</p>
+<pre class="code"><code>
+class Account:
+    def __init__(self):
+        self._balance = 0      # _ : 내부용
+    def deposit(self, x):
+        self._balance += x     # 메서드로만 변경
+</code></pre>
+    </div>
+    <div class="card mini">
+      <div class="top"><span class="idx">02</span><h3>상속 <small>Inheritance</small></h3></div>
+      <p>부모의 기능을 물려받아 확장한다.</p>
+<pre class="code"><code>
+class Animal:
+    def eat(self): return "냠냠"
+
+class Cat(Animal):             # Animal을 상속
+    def meow(self): return "야옹"
+</code></pre>
+    </div>
+    <div class="card mini">
+      <div class="top"><span class="idx">03</span><h3>다형성 <small>Polymorphism</small></h3></div>
+      <p>같은 호출, 객체마다 다른 동작.</p>
+<pre class="code"><code>
+class Dog:
+    def speak(self): return "멍멍"
+class Cat:
+    def speak(self): return "야옹"
+
+for a in [Dog(), Cat()]:
+    a.speak()                  # 멍멍 / 야옹
+</code></pre>
+    </div>
+    <div class="card mini">
+      <div class="top"><span class="idx">04</span><h3>추상화 <small>Abstraction</small></h3></div>
+      <p>세부 구현은 감추고, 핵심 기능만 약속으로 드러낸다.</p>
+<pre class="code"><code>
+class Shape(ABC):
+    @abstractmethod
+    def area(self): ...        # "넓이를 구할 수 있다"
+
+# 원·사각형이 각자 area()를 구현
+</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-foot="Part 2 · Class 기초">
+  <div class="hd tight">
+    <div class="kicker">Part 2 · Class 기초</div>
+    <h2 class="title">이후 예제에서 쓰는 파이썬 도구 4가지</h2>
+  </div>
+  <div class="grid2 compact">
+    <div class="card mini">
+      <div class="top"><h3 class="mono" style="font-size:19px">@dataclass</h3><span class="src">from dataclasses</span></div>
+      <p>데이터를 담는 클래스를 짧게. <span class="ic">__init__</span> 등을 자동 생성.</p>
+<pre class="code"><code>
+@dataclass
+class Point:
+    x: int
+    y: int
+
+Point(1, 2)        # Point(x=1, y=2)
+</code></pre>
+    </div>
+    <div class="card mini">
+      <div class="top"><h3 class="mono" style="font-size:19px">@property</h3><span class="src">내장</span></div>
+      <p>메서드를 속성처럼. setter가 없으면 <b>읽기 전용</b>.</p>
+<pre class="code"><code>
+class Circle:
+    def __init__(self, r): self.r = r
+
+    @property
+    def area(self): return 3.14 * self.r ** 2
+
+Circle(2).area     # 괄호 없이 12.56
+</code></pre>
+    </div>
+    <div class="card mini">
+      <div class="top"><h3 class="mono" style="font-size:19px">ABC</h3><span class="src">from abc</span></div>
+      <p>자식 클래스가 반드시 구현할 메서드를 <b>강제</b>.</p>
+<pre class="code"><code>
+class Animal(ABC):
+    @abstractmethod
+    def speak(self): ...
+
+Animal()           # TypeError: 직접 생성 불가
+</code></pre>
+    </div>
+    <div class="card mini">
+      <div class="top"><h3 class="mono" style="font-size:19px">Protocol</h3><span class="src">from typing</span></div>
+      <p>상속 없이 <b>모양(메서드)만 맞으면</b> 같은 타입으로 인정.</p>
+<pre class="code"><code>
+class Speaker(Protocol):
+    def speak(self) -> str: ...
+
+# speak()만 있으면 어떤 클래스든 Speaker
+</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PART 3 ═══════════════ -->
+<section class="slide s-divider" data-foot="Part 3 · 왜 OOP인가">
+  <div class="no">03</div>
+  <h2>왜 OOP인가</h2>
+  <p>코드가 작을 땐 문제없다. 문제는 코드가 <b>커지고, 바뀔 때</b> 생긴다.</p>
+  <div class="rule"></div>
+</section>
+
+<section class="slide" data-foot="Part 3 · 왜 OOP인가">
+  <div class="hd">
+    <div class="kicker">Part 3 · 왜 OOP인가</div>
+    <h2 class="title">절차 지향 코드가 커지면 생기는 5가지 문제</h2>
+  </div>
+  <div class="ptable">
+    <div class="prow"><span class="n">01</span><h3>흩어진 데이터</h3><p>dict와 함수가 따로 놀아, 데이터 구조를 알기 어렵다</p><div class="sol"><span class="chip">응집 · 명시적 구조</span></div></div>
+    <div class="prow"><span class="n">02</span><h3>무방비한 상태</h3><p>누구나 데이터를 직접 바꿔 규칙이 깨진다</p><div class="sol"><span class="chip">캡슐화</span></div></div>
+    <div class="prow"><span class="n">03</span><h3>if / elif 지옥</h3><p>종류가 하나 늘 때마다 모든 분기를 찾아 수정한다</p><div class="sol"><span class="chip">다형성</span></div></div>
+    <div class="prow"><span class="n">04</span><h3>복붙 중복</h3><p>비슷한 코드가 여러 벌, 한 곳만 고치면 버그</p><div class="sol"><span class="chip">상속 · 재사용</span></div></div>
+    <div class="prow"><span class="n">05</span><h3>교체·테스트 불가</h3><p>외부 의존성(DB, 메일)이 코드 안에 박혀 있다</p><div class="sol"><span class="chip">의존성 주입</span></div></div>
+  </div>
+  <div class="banner"><span class="arrow">+</span> AI Agent에게 코드를 맡기면, 이 문제들은 <b style="color:#A5B4FC">더 크게 증폭</b>된다 — 뒤에서 다시 봅니다</div>
+</section>
+
+<!-- 문제 1 -->
+<section class="slide" data-foot="Part 3 · 왜 OOP인가">
+  <div class="hd tight">
+    <div class="kicker">문제 01 · 흩어진 데이터</div>
+    <h2 class="title">“이 dict에 어떤 키가 있었더라?”</h2>
+  </div>
+  <div class="cmp">
+    <div class="pane bad">
+      <div class="pane-hd"><span class="badge bad">✕ 절차 지향</span><span class="pane-note">dict + 여기저기 흩어진 함수</span></div>
+<pre class="code" data-hl="11"><code>
+user = {"name": "Kim", "email": "kim@a.com"}
+
+# users.py
+def change_email(user, new): ...
+# mail.py
+def send_mail(user, msg): ...
+# auth.py
+def validate_user(user): ...
+
+# 키 이름을 기억해서 써야 함
+user["emial"] = "x@a.com"  # 오타 → 새 키 생성
+</code></pre>
+    </div>
+    <div class="pane good">
+      <div class="pane-hd"><span class="badge good">✓ 객체 지향</span><span class="pane-note">데이터와 행동이 한 곳에</span></div>
+<pre class="code" data-hl="1-4,11"><code>
+@dataclass
+class User:
+    name: str
+    email: str
+
+    def change_email(self, new): ...
+    def send_mail(self, msg): ...
+    def validate(self): ...
+
+user = User("Kim", "kim@a.com")
+user.emial   # 자동완성 · 타입 검사기가 바로 경고
+</code></pre>
+    </div>
+  </div>
+  <div class="verdict">
+    <div class="v bad"><span class="v-label">문제</span><p>데이터 구조가 <b>암묵적</b>이라 키 오타도 조용히 통과. 관련 함수는 파일 곳곳에 흩어진다.</p></div>
+    <div class="v good"><span class="v-label">개선</span><p>구조가 <b>명시적</b>이고, 관련 기능이 <span class="ic">User</span> 한 곳에 모인다 (높은 응집도).</p></div>
+  </div>
+</section>
+
+<!-- 문제 2 -->
+<section class="slide" data-foot="Part 3 · 왜 OOP인가">
+  <div class="hd tight">
+    <div class="kicker">문제 02 · 무방비한 상태</div>
+    <h2 class="title">“잔액이 왜 마이너스지?”</h2>
+  </div>
+  <div class="cmp">
+    <div class="pane bad">
+      <div class="pane-hd"><span class="badge bad">✕ 절차 지향</span><span class="pane-note">규칙은 함수에, 데이터는 누구나 수정</span></div>
+<pre class="code" data-hl="10"><code>
+account = {"balance": 1000}
+
+def withdraw(acc, amount):
+    if amount > acc["balance"]:
+        raise ValueError("잔액 부족")
+    acc["balance"] -= amount
+
+
+# 다른 파일 어딘가에서...
+account["balance"] = -5000   # 규칙 우회!
+</code></pre>
+    </div>
+    <div class="pane good">
+      <div class="pane-hd"><span class="badge good">✓ 객체 지향</span><span class="pane-note">캡슐화 — 정해진 문으로만 출입</span></div>
+<pre class="code" data-hl="5-7,15"><code>
+class Account:
+    def __init__(self, balance=0):
+        self._balance = balance
+
+    @property
+    def balance(self):          # 읽기 전용
+        return self._balance
+
+    def withdraw(self, amount):
+        if amount > self._balance:
+            raise ValueError("잔액 부족")
+        self._balance -= amount
+
+acc = Account(1000)
+acc.balance = -5000   # AttributeError
+</code></pre>
+    </div>
+  </div>
+  <div class="verdict">
+    <div class="v bad"><span class="v-label">문제</span><p>검증 규칙을 <b>건너뛰는 길</b>이 열려 있다. 버그가 나면 어디서 바꿨는지 전체를 뒤져야 한다.</p></div>
+    <div class="v good"><span class="v-label">개선</span><p>상태 변경은 <b>메서드를 통해서만</b>. 규칙이 항상 지켜지고, 변경 지점이 한 곳이다.</p></div>
+  </div>
+</section>
+
+<!-- 문제 3 -->
+<section class="slide" data-foot="Part 3 · 왜 OOP인가">
+  <div class="hd tight">
+    <div class="kicker">문제 03 · if / elif 지옥</div>
+    <h2 class="title">“삼각형 추가해 주세요” — 고칠 곳이 몇 군데?</h2>
+  </div>
+  <div class="cmp">
+    <div class="pane bad">
+      <div class="pane-hd"><span class="badge bad">✕ 절차 지향</span><span class="pane-note">타입마다 분기, 분기가 함수마다 반복</span></div>
+<pre class="code" data-hl="6,12"><code>
+def area(s):
+    if s["type"] == "circle":
+        return 3.14 * s["r"] ** 2
+    elif s["type"] == "rect":
+        return s["w"] * s["h"]
+    # 삼각형? → 여기 수정
+
+def draw(s):
+    if s["type"] == "circle": ...
+    elif s["type"] == "rect": ...
+    # → 여기도 수정
+# save(), to_json() ... 전부 수정
+</code></pre>
+    </div>
+    <div class="pane good">
+      <div class="pane-hd"><span class="badge good">✓ 객체 지향</span><span class="pane-note">다형성 — 각자 자기 일을 안다</span></div>
+<pre class="code" data-hl="9-11"><code>
+class Circle:
+    def __init__(self, r): self.r = r
+    def area(self): return 3.14 * self.r ** 2
+
+class Rect:
+    def __init__(self, w, h): self.w, self.h = w, h
+    def area(self): return self.w * self.h
+
+class Triangle:          # 추가 = 클래스 하나
+    def __init__(self, b, h): self.b, self.h = b, h
+    def area(self): return self.b * self.h / 2
+
+for s in [Circle(1), Rect(2, 3), Triangle(4, 5)]:
+    print(s.area())      # 타입을 몰라도 OK
+</code></pre>
+    </div>
+  </div>
+  <div class="verdict">
+    <div class="v bad"><span class="v-label">문제</span><p>새 종류 하나에 <b>모든 분기</b>를 찾아 고쳐야 한다. 하나라도 놓치면 버그.</p></div>
+    <div class="v good"><span class="v-label">개선</span><p>새 종류 = <b>새 클래스 추가</b>. 기존 코드는 건드리지 않는다.</p></div>
+  </div>
+</section>
+
+<!-- 문제 4 -->
+<section class="slide" data-foot="Part 3 · 왜 OOP인가">
+  <div class="hd tight">
+    <div class="kicker">문제 04 · 복붙 중복</div>
+    <h2 class="title">“로그 형식 바꿔 주세요” — 복붙한 곳이 몇 군데?</h2>
+  </div>
+  <div class="cmp">
+    <div class="pane bad">
+      <div class="pane-hd"><span class="badge bad">✕ 절차 지향</span><span class="pane-note">조금씩 다른 코드를 복사해서 수정</span></div>
+<pre class="code" data-hl="8,11"><code>
+def save_user(u):
+    log("saving...")
+    check_email(u)
+    db.insert("users", u)
+    log("done")
+
+def save_order(o):
+    log("saving...")       # 복붙
+    check_qty(o)           # 여기만 다름
+    db.insert("orders", o)
+    log("done")            # 복붙
+
+# save_product, save_review ...
+</code></pre>
+    </div>
+    <div class="pane good">
+      <div class="pane-hd"><span class="badge good">✓ 객체 지향</span><span class="pane-note">공통 흐름은 부모에, 차이만 자식에</span></div>
+<pre class="code" data-hl="5-9"><code>
+class Repo:
+    table = ""
+    def check(self, item): ...
+
+    def save(self, item):     # 공통 흐름은 한 곳
+        log("saving...")
+        self.check(item)
+        db.insert(self.table, item)
+        log("done")
+
+class UserRepo(Repo):
+    table = "users"
+    def check(self, u): check_email(u)
+
+class OrderRepo(Repo):
+    table = "orders"
+    def check(self, o): check_qty(o)
+</code></pre>
+    </div>
+  </div>
+  <div class="verdict">
+    <div class="v bad"><span class="v-label">문제</span><p>공통 로직을 바꾸려면 <b>복사본 전부</b>를 고쳐야 한다. 한 곳을 놓치면 동작이 엇갈린다.</p></div>
+    <div class="v good"><span class="v-label">개선</span><p>공통 흐름은 <b>한 곳</b>에서 관리하고, 다른 부분만 오버라이드한다.</p></div>
+  </div>
+</section>
+
+<!-- 문제 5 -->
+<section class="slide" data-foot="Part 3 · 왜 OOP인가">
+  <div class="hd tight">
+    <div class="kicker">문제 05 · 교체·테스트 불가</div>
+    <h2 class="title">“테스트 돌릴 때마다 진짜 메일이 나가요”</h2>
+  </div>
+  <div class="cmp">
+    <div class="pane bad">
+      <div class="pane-hd"><span class="badge bad">✕ 절차 지향</span><span class="pane-note">의존성이 함수 안에 하드코딩</span></div>
+<pre class="code" data-hl="5-6"><code>
+import smtplib
+
+def signup(email):
+    save_to_db(email)
+    smtp = smtplib.SMTP("mail.server.com")
+    smtp.sendmail("me", email, "환영!")
+
+
+# 테스트하면 실제 메일 발송
+# 메일 서비스를 바꾸면 이 함수를 수정
+</code></pre>
+    </div>
+    <div class="pane good">
+      <div class="pane-hd"><span class="badge good">✓ 객체 지향</span><span class="pane-note">의존성 주입 — 밖에서 넣어준다</span></div>
+<pre class="code" data-hl="2-3,12,14"><code>
+class SignupService:
+    def __init__(self, mailer):   # 주입받음
+        self.mailer = mailer
+
+    def signup(self, email):
+        save_to_db(email)
+        self.mailer.send(email, "환영!")
+
+
+# 운영
+SignupService(SmtpMailer())
+# 테스트 — 가짜 객체로 교체
+SignupService(FakeMailer())
+# 다른 서비스로 교체
+SignupService(SendGridMailer())
+</code></pre>
+    </div>
+  </div>
+  <div class="verdict">
+    <div class="v bad"><span class="v-label">문제</span><p>외부 시스템과 <b>강하게 결합</b>. 단위 테스트가 어렵고 교체하려면 내부를 고쳐야 한다.</p></div>
+    <div class="v good"><span class="v-label">개선</span><p><b>느슨한 결합</b>. 부품을 갈아 끼우듯 운영·테스트·교체가 자유롭다.</p></div>
+  </div>
+</section>
+
+<!-- AI Agent 1 -->
+<section class="slide" data-foot="Part 3 · 왜 OOP인가">
+  <div class="hd">
+    <div class="kicker">Part 3 · AI Agent 시대의 OOP</div>
+    <h2 class="title">AI Agent 코딩에서 OOP가 빛나는 이유</h2>
+    <p class="lead">AI는 프로젝트 ‘전체’를 한 번에 보지 못한다. <b>작고 명확한 단위</b>를 줄수록 정확해진다.</p>
+  </div>
+  <div class="grid4 fill">
+    <div class="card reason"><div class="n">01</div><h3>컨텍스트 절약</h3><p>AI가 한 번에 읽을 수 있는 양(컨텍스트)은 한정적이다. 잘 나뉜 클래스는 <b>필요한 파일만</b> 보여주면 된다.</p><div class="q">예) <span class="mono">notifier.py</span> 하나만 첨부 → 정확한 수정</div></div>
+    <div class="card reason"><div class="n">02</div><h3>인터페이스 = 명세</h3><p>메서드 이름과 타입 힌트가 곧 프롬프트. <b>“Notifier를 구현해줘”</b> 한 줄이면 충분하다.</p><div class="q">예) <span class="mono">def send(self, user, msg)</span> 시그니처가 곧 요구사항</div></div>
+    <div class="card reason"><div class="n">03</div><h3>변경 범위 국소화</h3><p>새 기능 = 새 클래스. 기존 코드를 덜 건드리니 <b>AI가 망가뜨릴 곳</b>도 줄고, 여러 에이전트가 병렬로 작업해도 충돌이 적다.</p><div class="q">예) 새 기능 = 새 파일 1개, 기존 파일 diff 0줄</div></div>
+    <div class="card reason"><div class="n">04</div><h3>검증이 쉽다</h3><p>의존성 주입 덕분에 가짜 객체로 즉시 테스트. <b>AI가 쓴 코드를 테스트가 지켜준다.</b></p><div class="q">예) <span class="mono">FakeDB</span>로 외부 연결 없이 수 초 만에 검증</div></div>
+  </div>
+  <div class="banner"><span class="arrow">→</span> 사람이 읽기 좋은 구조 = AI가 다루기 좋은 구조</div>
+</section>
+
+<!-- AI Agent 2 -->
+<section class="slide" data-foot="Part 3 · 왜 OOP인가">
+  <div class="hd tight">
+    <div class="kicker">Part 3 · AI Agent 시대의 OOP</div>
+    <h2 class="title">AI에게 “Slack 알림도 추가해줘”라고 하면?</h2>
+  </div>
+  <div class="cmp">
+    <div class="pane bad">
+      <div class="pane-hd"><span class="badge bad">✕ 절차 지향</span><span class="pane-note">AI가 분기를 전부 찾아야 한다</span></div>
+<pre class="code" data-hl="6-7,12"><code>
+def notify(kind, user, msg):
+    if kind == "email":
+        send_mail(user["email"], msg)
+    elif kind == "sms":
+        send_sms(user["phone"], msg)
+    elif kind == "slack":        # AI가 추가
+        post_slack(user["slack"], msg)
+
+def can_notify(kind, user):      # 다른 파일
+    if kind == "email": ...
+    elif kind == "sms": ...
+    # slack 분기 누락 → 버그
+</code></pre>
+    </div>
+    <div class="pane good">
+      <div class="pane-hd"><span class="badge good">✓ 객체 지향</span><span class="pane-note">인터페이스만 보여주면 된다</span></div>
+<pre class="code" data-hl="11-13"><code>
+class Notifier(Protocol):
+    def send(self, user, msg) -> None: ...
+
+class EmailNotifier:
+    def send(self, user, msg): ...
+
+class SmsNotifier:
+    def send(self, user, msg): ...
+
+# AI 작성: 새 클래스 하나, 기존 코드 수정 0
+class SlackNotifier:
+    def send(self, user, msg):
+        post_slack(user.slack_id, msg)
+</code></pre>
+    </div>
+  </div>
+  <div class="verdict">
+    <div class="v bad"><span class="v-label">AI 관점</span><p>읽어야 할 범위: <b>프로젝트 전체</b> · 수정 지점: <b>분기마다</b> · 하나만 놓쳐도 버그</p></div>
+    <div class="v good"><span class="v-label">AI 관점</span><p>필요한 컨텍스트: <b>Notifier 하나</b> · 수정 지점: <b>0</b> · 새 클래스만 테스트</p></div>
+  </div>
+</section>
+
+<!-- AI Agent 3 -->
+<section class="slide" data-foot="Part 3 · 왜 OOP인가">
+  <div class="hd">
+    <div class="kicker">Part 3 · AI Agent 시대의 OOP</div>
+    <h2 class="title">AI Agent 자체도 객체로 설계된다</h2>
+    <p class="lead">대부분의 Agent 프레임워크는 Tool · Memory · Agent를 클래스로 추상화한다.</p>
+  </div>
+  <div class="split">
+<pre class="code" data-hl="1-4"><code>
+class Tool(ABC):
+    name: str
+    @abstractmethod
+    def run(self, query: str) -> str: ...
+
+class WebSearch(Tool):
+    name = "web_search"
+    def run(self, query): return search_api(query)
+
+class Calculator(Tool):
+    name = "calculator"
+    def run(self, query): return str(safe_eval(query))
+
+class Agent:
+    def __init__(self, tools: list[Tool]):
+        self.tools = {t.name: t for t in tools}
+
+    def use(self, name: str, query: str) -> str:
+        return self.tools[name].run(query)
+</code></pre>
+    <div class="points" style="justify-content:center">
+      <div class="point"><span class="dot">1</span><p><b>추상화</b> — Agent는 <span class="ic">run()</span>만 알면 된다. 도구 내부는 몰라도 OK.</p></div>
+      <div class="point"><span class="dot">2</span><p><b>확장</b> — 새 도구 = <span class="ic">Tool</span>을 상속한 클래스 하나. Agent 코드는 그대로.</p></div>
+      <div class="point"><span class="dot">3</span><p><b>다형성</b> — 검색이든 계산이든 같은 방식으로 호출한다.</p></div>
+      <div class="point"><span class="dot">4</span><p><b>테스트</b> — 도구마다 독립적으로 검증하고, 가짜 Tool로 Agent를 시험한다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PART 4 ═══════════════ -->
+<section class="slide s-divider" data-foot="Part 4 · SOLID">
+  <div class="no">04</div>
+  <h2>SOLID 원칙</h2>
+  <p>OOP의 장점을 ‘지키기’ 위한 다섯 가지 설계 원칙</p>
+  <div class="rule"></div>
+</section>
+
+<section class="slide" data-foot="Part 4 · SOLID">
+  <div class="hd">
+    <div class="kicker">Part 4 · SOLID</div>
+    <h2 class="title">그런데, class만 쓰면 끝일까?</h2>
+  </div>
+  <div class="split">
+    <div class="pane bad">
+      <div class="pane-hd"><span class="badge bad">✕ 신(God) 클래스</span><span class="pane-note">class 문법을 쓴 절차 지향</span></div>
+<pre class="code" data-hl="11"><code>
+class OrderManager:
+    def create_order(self): ...
+    def calc_price(self): ...
+    def apply_coupon(self): ...
+    def save_to_mysql(self): ...
+    def send_email(self): ...
+    def make_pdf_invoice(self): ...
+    def log_to_file(self): ...
+    def sync_to_erp(self): ...
+    def export_excel(self): ...
+    # ... 3,000줄
+</code></pre>
+    </div>
+    <div class="points" style="justify-content:center">
+      <div class="point"><span class="dot">!</span><p><b>class 문법 ≠ 객체 지향 설계.</b> 모든 걸 아는 클래스는 절차 지향 코드를 상자에 담은 것뿐이다.</p></div>
+      <div class="point"><span class="dot">!</span><p>쿠폰 정책 하나 바꾸는데 DB · 메일 · PDF 코드까지 흔들린다. <b>앞에서 본 문제들이 그대로 돌아온다.</b></p></div>
+      <div class="point"><span class="dot">→</span><p>OOP의 장점을 지키려면 <b>설계 원칙</b>이 필요하다.<br>그것이 바로 <em class="mark"><b>SOLID</b></em>.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-foot="Part 4 · SOLID">
+  <div class="hd">
+    <div class="kicker">Part 4 · SOLID</div>
+    <h2 class="title">SOLID 한눈에 보기</h2>
+  </div>
+  <div class="grid5 solid">
+    <div class="card"><div class="L">S</div><h3>단일 책임</h3><div class="en">Single Responsibility</div><p>클래스는 <b>하나의 책임</b>만, 바뀌는 이유도 하나.</p><div class="q">바꿀 이유가 둘 이상인가?</div></div>
+    <div class="card"><div class="L">O</div><h3>개방-폐쇄</h3><div class="en">Open / Closed</div><p>확장에는 <b>열려</b> 있고, 수정에는 <b>닫혀</b> 있다.</p><div class="q">기능 추가에 기존 코드를 고치는가?</div></div>
+    <div class="card"><div class="L">L</div><h3>리스코프 치환</h3><div class="en">Liskov Substitution</div><p>자식은 언제나 부모를 <b>대신할 수</b> 있어야 한다.</p><div class="q">자식이 부모의 약속을 깨는가?</div></div>
+    <div class="card"><div class="L">I</div><h3>인터페이스 분리</h3><div class="en">Interface Segregation</div><p>쓰지 않는 메서드에 <b>의존하지 않는다</b>.</p><div class="q">억지로 구현한 메서드가 있는가?</div></div>
+    <div class="card"><div class="L">D</div><h3>의존성 역전</h3><div class="en">Dependency Inversion</div><p>구체 클래스가 아닌 <b>추상</b>에 의존한다.</p><div class="q">내부에서 구체 클래스를 직접 만드는가?</div></div>
+  </div>
+  <div class="banner"><span class="arrow">→</span> 다섯 원칙의 공통 목표: 변경이 생겨도 <b style="color:#A5B4FC">영향 범위를 작게</b> 유지하는 것</div>
+</section>
+
+<!-- S -->
+<section class="slide" data-foot="Part 4 · SOLID">
+  <div class="shd">
+    <div class="letter">S</div>
+    <div><h2 class="title">단일 책임 원칙<small>Single Responsibility</small></h2><p class="lead">한 클래스는 하나의 책임만 가진다. 즉, 변경되는 이유가 하나뿐이어야 한다.</p></div>
+  </div>
+  <div class="cmp">
+    <div class="pane bad">
+      <div class="pane-hd"><span class="badge bad">✕ 위반</span><span class="pane-note">계산 + 표현 + 저장을 한 클래스가</span></div>
+<pre class="code" data-hl="5,8,11"><code>
+class Report:
+    def __init__(self, data):
+        self.data = data
+
+    def total(self):            # 계산
+        return sum(self.data)
+
+    def to_html(self):          # 표현
+        return f"&lt;h1&gt;{self.total()}&lt;/h1&gt;"
+
+    def save(self, path):       # 저장
+        with open(path, "w") as f:
+            f.write(self.to_html())
+</code></pre>
+    </div>
+    <div class="pane good">
+      <div class="pane-hd"><span class="badge good">✓ 준수</span><span class="pane-note">책임마다 클래스 하나</span></div>
+<pre class="code" data-hl="1,5,9"><code>
+class Report:                   # 계산만
+    def __init__(self, data): self.data = data
+    def total(self): return sum(self.data)
+
+class HtmlFormatter:            # 표현만
+    def format(self, report):
+        return f"&lt;h1&gt;{report.total()}&lt;/h1&gt;"
+
+class FileSaver:                # 저장만
+    def save(self, text, path):
+        with open(path, "w") as f:
+            f.write(text)
+</code></pre>
+    </div>
+  </div>
+  <div class="verdict">
+    <div class="v bad"><span class="v-label">어기면</span><p>HTML 디자인을 고치다 계산 로직이 깨진다. 바뀌는 이유가 3개라 <b>충돌과 회귀 버그</b>가 잦다.</p></div>
+    <div class="v good"><span class="v-label">지키면</span><p>각자 독립적으로 변경·테스트·재사용. <span class="ic">PdfFormatter</span> 추가도 <b>Report를 건드리지 않고</b> 가능.</p></div>
+  </div>
+</section>
+
+<!-- O -->
+<section class="slide" data-foot="Part 4 · SOLID">
+  <div class="shd">
+    <div class="letter">O</div>
+    <div><h2 class="title">개방-폐쇄 원칙<small>Open / Closed</small></h2><p class="lead">확장에는 열려 있고, 수정에는 닫혀 있어야 한다. 새 기능은 ‘추가’로 만든다.</p></div>
+  </div>
+  <div class="cmp">
+    <div class="pane bad">
+      <div class="pane-hd"><span class="badge bad">✕ 위반</span><span class="pane-note">등급이 늘 때마다 if 추가</span></div>
+<pre class="code" data-hl="3-6"><code>
+class Checkout:
+    def pay(self, price, grade):
+        if grade == "vip":
+            return price * 0.8
+        elif grade == "gold":
+            return price * 0.9
+        return price
+
+
+# 새 등급 "platinum"?
+# → Checkout 코드를 직접 수정해야 함
+</code></pre>
+    </div>
+    <div class="pane good">
+      <div class="pane-hd"><span class="badge good">✓ 준수</span><span class="pane-note"><b>Strategy 패턴</b> — 할인 정책을 객체로</span></div>
+<pre class="code" data-hl="16-17"><code>
+class Discount(ABC):
+    @abstractmethod
+    def apply(self, price): ...
+
+class Vip(Discount):
+    def apply(self, price): return price * 0.8
+
+class Gold(Discount):
+    def apply(self, price): return price * 0.9
+
+class Checkout:
+    def pay(self, price, discount: Discount):
+        return discount.apply(price)
+
+# 새 등급 = 클래스 추가, Checkout은 그대로
+class Platinum(Discount):
+    def apply(self, price): return price * 0.7
+</code></pre>
+    </div>
+  </div>
+  <div class="verdict">
+    <div class="v bad"><span class="v-label">어기면</span><p>기능 하나 추가에 <b>잘 돌던 코드</b>를 열어 고친다. 매번 기존 기능 전체를 다시 테스트해야 한다.</p></div>
+    <div class="v good"><span class="v-label">지키면</span><p>새 정책은 <b>새 클래스로만</b> 추가. 검증된 기존 코드는 안전하게 유지된다.</p></div>
+  </div>
+</section>
+
+<!-- L -->
+<section class="slide" data-foot="Part 4 · SOLID">
+  <div class="shd">
+    <div class="letter">L</div>
+    <div><h2 class="title">리스코프 치환 원칙<small>Liskov Substitution</small></h2><p class="lead">부모 타입 자리에 자식을 넣어도 프로그램이 올바르게 동작해야 한다.</p></div>
+  </div>
+  <div class="cmp">
+    <div class="pane bad">
+      <div class="pane-hd"><span class="badge bad">✕ 위반</span><span class="pane-note">자식이 부모의 약속(fly)을 깬다</span></div>
+<pre class="code" data-hl="6-7,11-12"><code>
+class Bird:
+    def fly(self): return "날아간다"
+
+class Sparrow(Bird): ...
+
+class Penguin(Bird):
+    def fly(self): raise Exception("못 날아요!")
+
+
+def fly_all(birds: list[Bird]):
+    for b in birds:
+        b.fly()       # 펭귄에서 터짐
+</code></pre>
+    </div>
+    <div class="pane good">
+      <div class="pane-hd"><span class="badge good">✓ 준수</span><span class="pane-note">모든 새가 지킬 수 있는 약속으로</span></div>
+<pre class="code" data-hl="2,11-12"><code>
+class Bird:
+    def move(self): ...         # 모든 새가 가능
+
+class Sparrow(Bird):
+    def move(self): return "날아간다"
+
+class Penguin(Bird):
+    def move(self): return "뒤뚱뒤뚱 걷는다"
+
+
+def move_all(birds: list[Bird]):
+    for b in birds:
+        b.move()      # 어떤 새든 안전
+</code></pre>
+    </div>
+  </div>
+  <div class="verdict">
+    <div class="v bad"><span class="v-label">어기면</span><p>부모 타입을 믿을 수 없어 <span class="ic">if isinstance(b, Penguin)</span> 같은 <b>예외 처리가 곳곳에 퍼진다</b>.</p></div>
+    <div class="v good"><span class="v-label">지키면</span><p>다형성을 <b>안심하고</b> 쓸 수 있다. 새 자식 클래스가 와도 호출 코드는 그대로.</p></div>
+  </div>
+</section>
+
+<!-- I -->
+<section class="slide" data-foot="Part 4 · SOLID">
+  <div class="shd">
+    <div class="letter">I</div>
+    <div><h2 class="title">인터페이스 분리 원칙<small>Interface Segregation</small></h2><p class="lead">하나의 거대한 인터페이스보다, 역할별로 작게 나눈 여러 인터페이스가 낫다.</p></div>
+  </div>
+  <div class="cmp">
+    <div class="pane bad">
+      <div class="pane-hd"><span class="badge bad">✕ 위반</span><span class="pane-note">모든 기계가 모든 기능을 강요받음</span></div>
+<pre class="code" data-hl="11-14"><code>
+class Machine(ABC):
+    @abstractmethod
+    def print(self, doc): ...
+    @abstractmethod
+    def scan(self, doc): ...
+    @abstractmethod
+    def fax(self, doc): ...
+
+class SimplePrinter(Machine):
+    def print(self, doc): ...
+    def scan(self, doc):
+        raise NotImplementedError   # 억지 구현
+    def fax(self, doc):
+        raise NotImplementedError   # 억지 구현
+</code></pre>
+    </div>
+    <div class="pane good">
+      <div class="pane-hd"><span class="badge good">✓ 준수</span><span class="pane-note">역할별 작은 Protocol</span></div>
+<pre class="code" data-hl="7-8"><code>
+class Printer(Protocol):
+    def print(self, doc): ...
+
+class Scanner(Protocol):
+    def scan(self, doc): ...
+
+class SimplePrinter:          # 필요한 것만
+    def print(self, doc): ...
+
+class OfficeMachine:          # 둘 다 가능
+    def print(self, doc): ...
+    def scan(self, doc): ...
+
+def print_all(p: Printer, docs): ...
+</code></pre>
+    </div>
+  </div>
+  <div class="verdict">
+    <div class="v bad"><span class="v-label">어기면</span><p>쓰지도 않는 메서드를 <b>억지로 구현</b>하고, 호출하면 런타임에 터진다. 인터페이스 변경 시 모두가 영향받는다.</p></div>
+    <div class="v good"><span class="v-label">지키면</span><p>각 클래스는 <b>필요한 역할만</b> 구현. 함수는 필요한 능력(<span class="ic">Printer</span>)만 요구한다.</p></div>
+  </div>
+</section>
+
+<!-- D -->
+<section class="slide" data-foot="Part 4 · SOLID">
+  <div class="shd">
+    <div class="letter">D</div>
+    <div><h2 class="title">의존성 역전 원칙<small>Dependency Inversion</small></h2><p class="lead">고수준 모듈(비즈니스 로직)은 저수준 모듈(DB 등)이 아닌 추상에 의존해야 한다.</p></div>
+  </div>
+  <div class="cmp">
+    <div class="pane bad">
+      <div class="pane-hd"><span class="badge bad">✕ 위반</span><span class="pane-note">OrderService → MySQL (직접 의존)</span></div>
+<pre class="code" data-hl="6"><code>
+class MySQL:
+    def save(self, data): ...
+
+class OrderService:
+    def __init__(self):
+        self.db = MySQL()     # 구체 클래스를 직접 생성
+
+    def place(self, order):
+        self.db.save(order)
+
+
+# DB 교체? 테스트?
+# → OrderService를 수정해야 함
+</code></pre>
+    </div>
+    <div class="pane good">
+      <div class="pane-hd"><span class="badge good">✓ 준수</span><span class="pane-note"><b>의존성 주입</b> — OrderService → Database ← MySQL</span></div>
+<pre class="code" data-hl="1-3,13-14"><code>
+class Database(ABC):                  # 추상
+    @abstractmethod
+    def save(self, data): ...
+
+class MySQL(Database):
+    def save(self, data): ...
+
+class FakeDB(Database):               # 테스트용
+    def __init__(self): self.saved = []
+    def save(self, data): self.saved.append(data)
+
+class OrderService:
+    def __init__(self, db: Database):  # 추상에 의존
+        self.db = db
+    def place(self, order): self.db.save(order)
+
+OrderService(MySQL())    # 운영
+OrderService(FakeDB())   # 테스트
+</code></pre>
+    </div>
+  </div>
+  <div class="verdict">
+    <div class="v bad"><span class="v-label">어기면</span><p>핵심 로직이 DB 같은 <b>세부 구현에 묶인다</b>. 교체·테스트 때마다 핵심 로직을 고쳐야 한다.</p></div>
+    <div class="v good"><span class="v-label">지키면</span><p>DB, 메일, LLM API까지 <b>부품처럼 교체</b>. 테스트는 FakeDB로 빠르고 안전하게.</p></div>
+  </div>
+</section>
+
+<!-- SOLID summary -->
+<section class="slide" data-foot="Part 4 · SOLID">
+  <div class="hd">
+    <div class="kicker">Part 4 · SOLID</div>
+    <h2 class="title">SOLID 요약</h2>
+  </div>
+  <table class="sum">
+    <thead><tr><th>원칙</th><th>한 줄 요약</th><th>어기면</th><th>지키면</th><th>함께 쓰는 패턴</th></tr></thead>
+    <tbody>
+      <tr><td class="p"><span>S</span>단일 책임</td><td>책임 하나, 바뀌는 이유 하나</td><td class="bad">수정이 엉뚱한 곳을 깨뜨림</td><td class="good">독립적인 변경·테스트</td><td><span class="chip gray">Facade</span></td></tr>
+      <tr><td class="p"><span>O</span>개방-폐쇄</td><td>수정 없이 추가로 확장</td><td class="bad">기능마다 기존 코드 수정</td><td class="good">검증된 코드 보존</td><td><span class="chip gray">Strategy</span> <span class="chip gray">Decorator</span></td></tr>
+      <tr><td class="p"><span>L</span>리스코프 치환</td><td>자식은 부모를 대신할 수 있다</td><td class="bad">isinstance 분기 확산</td><td class="good">믿을 수 있는 다형성</td><td><span class="chip gray">Template Method</span></td></tr>
+      <tr><td class="p"><span>I</span>인터페이스 분리</td><td>작고 역할별인 인터페이스</td><td class="bad">억지 구현, 런타임 에러</td><td class="good">필요한 것만 의존</td><td><span class="chip gray">Adapter</span></td></tr>
+      <tr><td class="p"><span>D</span>의존성 역전</td><td>구체가 아닌 추상에 의존</td><td class="bad">교체·테스트 불가</td><td class="good">부품처럼 갈아 끼우기</td><td><span class="chip gray">Factory</span> <span class="chip gray">DI</span></td></tr>
+    </tbody>
+  </table>
+  <div class="banner"><span class="arrow">→</span> SOLID를 지킨 코드 = 사람도, AI Agent도 안전하게 고칠 수 있는 코드</div>
+</section>
+
+<!-- ═══════════════ PART 5 ═══════════════ -->
+<section class="slide s-divider" data-foot="Part 5 · 정리">
+  <div class="no">05</div>
+  <h2>정리</h2>
+  <p>원칙만큼 중요한 것 — 언제, 얼마나 쓸 것인가</p>
+  <div class="rule"></div>
+</section>
+
+<section class="slide" data-foot="Part 5 · 정리">
+  <div class="hd tight">
+    <div class="kicker">Part 5 · 정리</div>
+    <h2 class="title">균형 감각: 과설계도 문제다</h2>
+  </div>
+  <div class="grid2">
+    <div class="card mini">
+      <div class="top"><span class="idx">01</span><h3>필요할 때, 필요한 만큼</h3></div>
+      <p>한 번 쓰는 계산에 클래스·추상화를 쌓으면 오히려 읽기 어렵다. <b>YAGNI</b> — 지금 필요 없으면 만들지 말자.</p>
+<pre class="code"><code>
+# 과설계
+class AbstractAdder(ABC): ...
+class AdderFactory: ...
+AdderFactory.create("basic").add(1, 2)
+
+# 충분
+def add(a, b): return a + b
+</code></pre>
+      <p style="margin-top:6px">짧은 스크립트·데이터 변환은 <b>함수/함수형</b>이 더 잘 맞는다. 같은 변경이 반복될 때 추상화하라.</p>
+    </div>
+    <div class="card mini">
+      <div class="top"><span class="idx">02</span><h3>상속보다 조합</h3></div>
+      <p>상속은 강한 결합이다. ‘A는 B이다(is-a)’가 아니라면 <b>‘A는 B를 가진다(has-a)’</b>로 조합하자.</p>
+<pre class="code" data-hl="5-7"><code>
+# 상속: 로봇 오리는 엔진인가?
+class RobotDuck(Duck, Engine): ...
+
+# 조합: 로봇 오리는 엔진을 가진다
+class RobotDuck(Duck):
+    def __init__(self, engine):
+        self.engine = engine
+</code></pre>
+      <p style="margin-top:6px">상속 계층은 <b>얕게</b>, 기능은 객체를 <b>끼워 넣는</b> 방식으로.</p>
+    </div>
+  </div>
+  <div class="banner"><span class="arrow">→</span> 지금은 단순하게, 바뀌는 곳은 유연하게. 원칙은 목적이 아니라 도구다.</div>
+</section>
+
+<section class="slide" data-foot="Part 5 · 정리">
+  <div class="hd">
+    <div class="kicker">Part 5 · 정리</div>
+    <h2 class="title">핵심 요약</h2>
+  </div>
+  <div class="take">
+    <div class="row"><span class="n">01</span><p><b>객체 = 데이터 + 행동.</b> class는 그 객체를 만드는 설계도다.</p></div>
+    <div class="row"><span class="n">02</span><p>OOP는 <b>변경에 강한 코드</b>를 위한 도구다 — 흩어짐 · 중복 · 분기 · 결합을 줄인다.</p></div>
+    <div class="row"><span class="n">03</span><p>AI Agent에게도 <b>작고 명확한 클래스와 인터페이스</b>가 최고의 컨텍스트다.</p></div>
+    <div class="row"><span class="n">04</span><p>class 문법만으로는 부족하다. <b>SOLID</b>가 OOP의 장점을 지켜준다.</p></div>
+    <div class="row"><span class="n">05</span><p>과설계는 금물. <b>필요할 때, 필요한 만큼</b> 추상화하라.</p></div>
+  </div>
+</section>
+
+<!-- ═══════════════ APPENDIX ═══════════════ -->
+<section class="slide" data-foot="Appendix · 디자인 패턴">
+  <div class="hd">
+    <div class="kicker">Appendix</div>
+    <h2 class="title">디자인 패턴 — 검증된 설계의 이름</h2>
+    <p class="lead">자주 반복되는 설계 문제에 대한 해법 모음. 이름을 알면 팀(그리고 AI)과의 소통이 빨라진다.</p>
+  </div>
+  <div class="grid3 pidx">
+    <div class="col">
+      <h4>생성 · Creational</h4>
+      <div class="card pi"><h3>Factory</h3><p>객체 생성을 한 곳에 모은다</p></div>
+      <div class="card pi"><h3>Singleton</h3><p>인스턴스를 단 하나만</p></div>
+    </div>
+    <div class="col">
+      <h4>구조 · Structural</h4>
+      <div class="card pi"><h3>Adapter</h3><p>맞지 않는 인터페이스를 연결</p></div>
+      <div class="card pi"><h3>Decorator</h3><p>기존 객체에 기능을 덧입힌다</p></div>
+    </div>
+    <div class="col">
+      <h4>행위 · Behavioral</h4>
+      <div class="card pi"><h3>Strategy</h3><p>알고리즘을 갈아 끼운다</p></div>
+      <div class="card pi"><h3>Observer</h3><p>변화를 구독자에게 알린다</p></div>
+      <div class="card pi"><h3>Template Method</h3><p>흐름은 고정, 단계만 교체</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Factory -->
+<section class="slide" data-foot="Appendix · 디자인 패턴">
+  <div class="hd">
+    <div class="kicker">Appendix · 생성 패턴</div>
+    <h2 class="title">Factory</h2>
+  </div>
+  <div class="pat">
+    <aside>
+      <div><h4>의도</h4><p class="intent">어떤 클래스를 만들지 결정하는 일을 한 곳에 모은다.</p></div>
+      <div><h4>언제 쓰나</h4><ul><li>문자열·설정값으로 객체를 골라 만들 때</li><li>생성 로직이 여기저기 흩어질 때</li></ul></div>
+      <div><h4>관련 원칙</h4><div class="chips"><span class="chip">OCP</span><span class="chip">DIP</span></div></div>
+    </aside>
+<pre class="code" data-hl="7-12"><code>
+class Dog:
+    def speak(self): return "멍멍"
+
+class Cat:
+    def speak(self): return "야옹"
+
+class AnimalFactory:
+    _registry = {"dog": Dog, "cat": Cat}
+
+    @classmethod
+    def create(cls, kind: str):
+        return cls._registry[kind]()
+
+
+pet = AnimalFactory.create("cat")   # 설정값으로 생성
+pet.speak()                          # '야옹'
+</code></pre>
+  </div>
+</section>
+
+<!-- Singleton -->
+<section class="slide" data-foot="Appendix · 디자인 패턴">
+  <div class="hd">
+    <div class="kicker">Appendix · 생성 패턴</div>
+    <h2 class="title">Singleton</h2>
+  </div>
+  <div class="pat">
+    <aside>
+      <div><h4>의도</h4><p class="intent">클래스의 인스턴스가 오직 하나만 존재하도록 보장한다.</p></div>
+      <div><h4>언제 쓰나</h4><ul><li>설정, 커넥션 풀처럼 하나만 있어야 할 때</li></ul></div>
+      <div><h4>주의</h4><p>사실상 전역 변수라 남용하면 테스트가 어려워진다. 파이썬에선 <b>모듈 자체가 싱글턴</b>이므로 모듈 변수로 충분한 경우가 많다.</p></div>
+    </aside>
+<pre class="code" data-hl="4-7"><code>
+class Config:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+
+a = Config()
+b = Config()
+a is b        # True — 같은 객체
+</code></pre>
+  </div>
+</section>
+
+<!-- Adapter -->
+<section class="slide" data-foot="Appendix · 디자인 패턴">
+  <div class="hd">
+    <div class="kicker">Appendix · 구조 패턴</div>
+    <h2 class="title">Adapter</h2>
+  </div>
+  <div class="pat">
+    <aside>
+      <div><h4>의도</h4><p class="intent">호환되지 않는 인터페이스를 원하는 모양으로 바꿔 연결한다. (돼지코 어댑터)</p></div>
+      <div><h4>언제 쓰나</h4><ul><li>고칠 수 없는 레거시·외부 라이브러리를 쓸 때</li><li>여러 LLM API를 같은 인터페이스로 묶을 때</li></ul></div>
+      <div><h4>관련 원칙</h4><div class="chips"><span class="chip">ISP</span><span class="chip">OCP</span></div></div>
+    </aside>
+<pre class="code" data-hl="7-12"><code>
+class OldPrinter:                  # 바꿀 수 없는 기존 코드
+    def print_text(self, s): print(s)
+
+class Printer(Protocol):           # 우리가 원하는 인터페이스
+    def output(self, s: str): ...
+
+class PrinterAdapter:
+    def __init__(self, old: OldPrinter):
+        self.old = old
+
+    def output(self, s):
+        self.old.print_text(s)     # 변환해서 전달
+
+
+def run(p: Printer):
+    p.output("hello")
+
+run(PrinterAdapter(OldPrinter()))
+</code></pre>
+  </div>
+</section>
+
+<!-- Decorator -->
+<section class="slide" data-foot="Appendix · 디자인 패턴">
+  <div class="hd">
+    <div class="kicker">Appendix · 구조 패턴</div>
+    <h2 class="title">Decorator</h2>
+  </div>
+  <div class="pat">
+    <aside>
+      <div><h4>의도</h4><p class="intent">객체를 감싸서, 원본을 고치지 않고 기능을 덧붙인다.</p></div>
+      <div><h4>언제 쓰나</h4><ul><li>옵션 조합이 많아 상속으로는 클래스가 폭발할 때</li><li>로깅·캐싱·재시도 같은 부가 기능</li></ul></div>
+      <div><h4>참고</h4><p>파이썬의 <span class="ic">@decorator</span> 문법은 같은 아이디어를 <b>함수</b>에 적용한 것.</p></div>
+    </aside>
+<pre class="code" data-hl="15"><code>
+class Coffee:
+    def cost(self): return 3000
+
+class Milk:
+    def __init__(self, base): self.base = base
+    def cost(self): return self.base.cost() + 500
+
+class Shot:
+    def __init__(self, base): self.base = base
+    def cost(self): return self.base.cost() + 700
+
+
+# 감싸는 순서대로 기능이 쌓인다
+order = Shot(Milk(Coffee()))
+order.cost()      # 4200
+</code></pre>
+  </div>
+</section>
+
+<!-- Strategy -->
+<section class="slide" data-foot="Appendix · 디자인 패턴">
+  <div class="hd">
+    <div class="kicker">Appendix · 행위 패턴</div>
+    <h2 class="title">Strategy</h2>
+  </div>
+  <div class="pat">
+    <aside>
+      <div><h4>의도</h4><p class="intent">알고리즘을 객체(또는 함수)로 분리해 실행 중에 갈아 끼운다.</p></div>
+      <div><h4>언제 쓰나</h4><ul><li>같은 일을 하는 방법이 여러 가지일 때</li><li>if/elif로 방법을 고르고 있을 때</li></ul></div>
+      <div><h4>참고</h4><p>클래스 버전은 SOLID <b>O</b> 슬라이드 참고. 파이썬은 함수도 객체라 <b>함수를 전략으로</b> 넘길 수 있다.</p></div>
+    </aside>
+<pre class="code" data-hl="13-14"><code>
+def by_price(item): return item.price
+def by_name(item):  return item.name
+
+class Catalog:
+    def __init__(self, items, sort_key):
+        self.items = items
+        self.sort_key = sort_key        # 전략 주입
+
+    def show(self):
+        return sorted(self.items, key=self.sort_key)
+
+
+Catalog(items, by_price).show()     # 가격순
+Catalog(items, by_name).show()      # 이름순
+</code></pre>
+  </div>
+</section>
+
+<!-- Observer -->
+<section class="slide" data-foot="Appendix · 디자인 패턴">
+  <div class="hd">
+    <div class="kicker">Appendix · 행위 패턴</div>
+    <h2 class="title">Observer</h2>
+  </div>
+  <div class="pat">
+    <aside>
+      <div><h4>의도</h4><p class="intent">한 객체의 변화를, 구독한 여러 객체에게 자동으로 알린다.</p></div>
+      <div><h4>언제 쓰나</h4><ul><li>이벤트 · 알림 · UI 갱신</li><li>Agent의 진행 상황을 로그·화면에 동시에 전달할 때</li></ul></div>
+      <div><h4>관련 원칙</h4><div class="chips"><span class="chip">OCP</span><span class="chip">느슨한 결합</span></div></div>
+    </aside>
+<pre class="code" data-hl="8-10"><code>
+class Channel:
+    def __init__(self):
+        self.subscribers = []
+
+    def subscribe(self, fn):
+        self.subscribers.append(fn)
+
+    def upload(self, title):
+        for notify in self.subscribers:
+            notify(title)
+
+
+ch = Channel()
+ch.subscribe(lambda t: print("앱 알림:", t))
+ch.subscribe(lambda t: print("메일 발송:", t))
+ch.upload("OOP 강의")    # 두 구독자 모두 반응
+</code></pre>
+  </div>
+</section>
+
+<!-- Template Method -->
+<section class="slide" data-foot="Appendix · 디자인 패턴">
+  <div class="hd">
+    <div class="kicker">Appendix · 행위 패턴</div>
+    <h2 class="title">Template Method</h2>
+  </div>
+  <div class="pat">
+    <aside>
+      <div><h4>의도</h4><p class="intent">전체 흐름은 부모가 정하고, 세부 단계만 자식이 채운다.</p></div>
+      <div><h4>언제 쓰나</h4><ul><li>순서는 같고 단계 구현만 다를 때</li><li>ETL 파이프라인, 테스트 setUp/tearDown</li></ul></div>
+      <div><h4>관련</h4><p>Part 3 ‘복붙 중복’ 해결 예제가 바로 이 패턴.</p></div>
+    </aside>
+<pre class="code" data-hl="2-5"><code>
+class Pipeline(ABC):
+    def run(self):                    # 흐름은 고정
+        data = self.load()
+        data = self.transform(data)
+        self.save(data)
+
+    @abstractmethod
+    def load(self): ...
+    def transform(self, data): return data   # 기본값
+    @abstractmethod
+    def save(self, data): ...
+
+
+class CsvToDb(Pipeline):
+    def load(self): return read_csv("a.csv")
+    def save(self, data): db.insert(data)
+
+CsvToDb().run()
+</code></pre>
+  </div>
+</section>
+
+<!-- END -->
+<section class="slide s-end" data-foot="none">
+  <div class="kicker">Thank you</div>
+  <h2>감사합니다</h2>
+  <p>좋은 설계는 <b>바뀔 것</b>을 예상하는 데서 시작합니다.</p>
+  <div class="refs">
+    <span class="chip gray">Clean Code / Clean Architecture — Robert C. Martin</span>
+    <span class="chip gray">Head First Design Patterns</span>
+    <span class="chip gray">refactoring.guru/design-patterns</span>
+  </div>
+</section>
+
+</main>
+
+<script>
+(() => {
+  /* ── Python 문법 하이라이터 ── */
+  const KW = new Set("class def return if elif else for in while import from as with raise try except finally pass lambda None True False and or not is global nonlocal yield async await assert del break continue".split(" "));
+  const BI = new Set("print len sum open super isinstance sorted str int float list dict set tuple range property classmethod staticmethod abstractmethod ValueError Exception NotImplementedError AttributeError TypeError".split(" "));
+  const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const span = (c, t) => `<span class="tk-${c}">${esc(t)}</span>`;
+  const TOKEN = /(#[^\n]*)|([rRbBfF]{0,2}(?:"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'))|(@[A-Za-z_][\w.]*)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)|(\s+)|([\s\S])/g;
+
+  function highlight(src) {
+    let out = "", m, prev = "";
+    TOKEN.lastIndex = 0;
+    while ((m = TOKEN.exec(src))) {
+      const [t, com, str, dec, num, id, ws] = m;
+      if (ws) { out += t; continue; }
+      if (com) out += span("c", t);
+      else if (str) out += span("s", t);
+      else if (dec) out += span("d", t);
+      else if (num) out += span("n", t);
+      else if (id) {
+        if (prev === "def") out += span("f", t);
+        else if (prev === "class") out += span("t", t);
+        else if (KW.has(id)) out += span("k", t);
+        else if (id === "self" || id === "cls") out += span("v", t);
+        else if (BI.has(id)) out += span("b", t);
+        else if (/^[A-Z]/.test(id)) out += span("t", t);
+        else out += esc(t);
+      } else out += esc(t);
+      prev = id && KW.has(id) ? id : "";
+    }
+    return out;
+  }
+
+  function parseRanges(spec) {
+    const s = new Set();
+    (spec || "").split(",").filter(Boolean).forEach(p => {
+      const [a, b] = p.split("-").map(Number);
+      for (let i = a; i <= (b || a); i++) s.add(i);
+    });
+    return s;
+  }
+
+  document.querySelectorAll("pre.code").forEach(pre => {
+    const code = pre.querySelector("code") || pre;
+    let lines = code.textContent.replace(/^\n/, "").replace(/\s+$/, "").split("\n");
+    const ind = Math.min(...lines.filter(l => l.trim()).map(l => l.match(/^ */)[0].length));
+    lines = lines.map(l => l.slice(ind));
+    const hl = parseRanges(pre.dataset.hl);
+    code.innerHTML = highlight(lines.join("\n")).split("\n")
+      .map((l, i) => `<span class="ln${hl.has(i + 1) ? " hl" : ""}">${l || " "}</span>`).join("");
+  });
+
+  /* ── 코드가 영역을 넘치면 글자 크기를 줄여 맞춤 ── */
+  function fitCode() {
+    document.querySelectorAll("pre.code").forEach(pre => {
+      pre.style.fontSize = "";
+      let fs = parseFloat(getComputedStyle(pre).fontSize);
+      while ((pre.scrollHeight > pre.clientHeight + 2 || pre.scrollWidth > pre.clientWidth + 2) && fs > 10) {
+        fs -= 0.5;
+        pre.style.fontSize = fs + "px";
+      }
+    });
+    // 비교 슬라이드는 좌우 코드 크기를 통일
+    document.querySelectorAll(".cmp").forEach(cmp => {
+      const pres = [...cmp.querySelectorAll("pre.code")];
+      const min = Math.min(...pres.map(p => parseFloat(getComputedStyle(p).fontSize)));
+      pres.forEach(p => { p.style.fontSize = min + "px"; });
+    });
+  }
+
+  /* ── 슬라이드 내비게이션 ── */
+  const slides = [...document.querySelectorAll(".slide")];
+  const total = slides.length;
+  slides.forEach((s, i) => {
+    const label = s.dataset.foot;
+    if (label === "none") return;
+    const f = document.createElement("div");
+    f.className = "foot";
+    f.innerHTML = `<span><b>Python OOP</b> &nbsp;·&nbsp; ${label || ""}</span><span>${i + 1} / ${total}</span>`;
+    s.appendChild(f);
+  });
+
+  let cur = 0;
+  const progress = document.getElementById("progress");
+  function go(n) {
+    n = Math.max(0, Math.min(total - 1, n));
+    slides[cur].classList.remove("active");
+    cur = n;
+    slides[cur].classList.add("active");
+    progress.style.width = ((cur + 1) / total * 100) + "%";
+    history.replaceState(null, "", "#" + (cur + 1));
+  }
+  function scale() {
+    const s = Math.min(innerWidth / 1280, innerHeight / 720);
+    document.documentElement.style.setProperty("--scale", s);
+  }
+  function toggleFs() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  }
+
+  addEventListener("resize", scale);
+  addEventListener("keydown", e => {
+    if (["ArrowRight", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+    else if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+    else if (e.key === "Home") go(0);
+    else if (e.key === "End") go(total - 1);
+    else if (e.key === "f" || e.key === "F") toggleFs();
+  });
+  document.getElementById("prev").onclick = () => go(cur - 1);
+  document.getElementById("next").onclick = () => go(cur + 1);
+  document.getElementById("fs").onclick = toggleFs;
+
+  let tx = null;
+  addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passive: true });
+  addEventListener("touchend", e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) go(cur + (dx < 0 ? 1 : -1));
+    tx = null;
+  });
+
+  scale();
+  go((parseInt(location.hash.slice(1), 10) || 1) - 1);
+  fitCode();
+  document.fonts?.ready.then(fitCode);
+})();
+</script>
+</body>
+</html>
