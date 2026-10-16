@@ -311,6 +311,8 @@ pre.code .ln.hl { background: rgba(129,140,248,.16); box-shadow: inset 3px 0 #81
 .shd .title { font-size: 30px; }
 .shd .title small { font-size: 16px; color: var(--ink-3); font-weight: 600; margin-left: 8px; letter-spacing: 0; }
 .shd .lead { font-size: 16.5px; margin-top: 4px; }
+.shd .lead .tip { display: block; font-size: 14px; color: var(--ink-3); margin-top: 2px; }
+.shd .lead .tip b { color: var(--ink-2); }
 
 /* summary table */
 table.sum { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; font-size: 15.5px; }
@@ -405,7 +407,7 @@ class Lecture:
     <div class="card item"><div class="num">03</div><div><h3>왜 OOP인가</h3><p>절차 지향의 5가지 문제 · AI Agent 시대의 OOP</p></div></div>
     <div class="card item"><div class="num">04</div><div><h3>SOLID 원칙</h3><p>OOP의 장점을 지켜주는 5가지 설계 원칙</p></div></div>
     <div class="card item"><div class="num">05</div><div><h3>정리</h3><p>균형 감각과 핵심 요약</p></div></div>
-    <div class="card item appx"><div class="num">A</div><div><h3>Appendix · 디자인 패턴</h3><p>자주 쓰는 패턴 7가지 구현 예제</p></div></div>
+    <div class="card item appx"><div class="num">A</div><div><h3>Appendix · 디자인 패턴</h3><p>자주 쓰는 패턴 8가지 구현 예제</p></div></div>
   </div>
 </section>
 
@@ -443,17 +445,20 @@ deposit(100)
       <span class="star">오늘의 주제</span>
       <div class="en">Object-Oriented</div>
       <h3>객체 지향</h3>
-      <p class="desc"><b>데이터 + 행동</b>을 하나의 객체로 묶고, 객체끼리 협력한다.</p>
-<pre class="code" data-hl="1,5-6"><code>
+      <p class="desc"><b>데이터 + 행동</b>을 클래스로 묶고, 그 설계도로 <b>독립된 객체</b>를 여럿 찍어낸다.</p>
+<pre class="code" data-hl="1,9-10"><code>
 class Account:
-    def __init__(self):
+    def __init__(self, owner):
+        self.owner = owner
         self.balance = 0
 
     def deposit(self, amount):
         self.balance += amount
 
-acc = Account()
-acc.deposit(100)
+kim = Account("kim")   # 같은 설계도
+lee = Account("lee")   # 다른 객체
+kim.deposit(100)       # kim만 100
+lee.deposit(50)        # lee는 50
 </code></pre>
       <div class="chips"><span class="chip">객체</span><span class="chip">캡슐화</span><span class="chip">재사용 · 확장</span></div>
       <div class="analogy"><b>비유</b> · 팀 — 각자 역할을 가진 사람들이 협력</div>
@@ -461,16 +466,20 @@ acc.deposit(100)
     <div class="card func">
       <div class="en">Functional</div>
       <h3>함수형</h3>
-      <p class="desc">상태를 바꾸지 않고, <b>입력 → 출력</b>인 순수 함수를 조합한다.</p>
-<pre class="code"><code>
-def deposit(balance, amount):
-    return balance + amount
+      <p class="desc">상태를 바꾸지 않는 순수 함수를 <b>체이닝(조합)</b>해 데이터를 흘려보낸다.</p>
+<pre class="code" data-hl="8-9"><code>
+from functools import reduce
 
-b0 = 0
-b1 = deposit(b0, 100)
-# b0는 그대로, 새 값 b1
+def deposit(balance, amount):
+    return balance + amount   # 새 값 반환
+
+amounts = [100, -20, 50]
+
+balance = reduce(deposit,     # 2. 누적
+    filter(lambda a: a > 0, amounts), 0)  # 1. 거르기
+# filter → reduce 체이닝: 150
 </code></pre>
-      <div class="chips"><span class="chip func">순수 함수</span><span class="chip func">불변성</span><span class="chip func">부수효과 X</span></div>
+      <div class="chips"><span class="chip func">순수 함수</span><span class="chip func">체이닝 · 조합</span><span class="chip func">불변성</span></div>
       <div class="analogy"><b>비유</b> · 공장 라인 — 넣으면 결과가 나온다</div>
     </div>
   </div>
@@ -1102,7 +1111,7 @@ class OrderManager:
 <section class="slide" data-foot="Part 4 · SOLID">
   <div class="shd">
     <div class="letter">S</div>
-    <div><h2 class="title">단일 책임 원칙<small>Single Responsibility</small></h2><p class="lead">한 클래스는 하나의 책임만 가진다. 즉, 변경되는 이유가 하나뿐이어야 한다.</p></div>
+    <div><h2 class="title">단일 책임 원칙<small>Single Responsibility</small></h2><p class="lead">한 클래스는 하나의 책임만 가진다. 즉, 변경되는 이유가 하나뿐이어야 한다.<span class="tip">※ class만의 이야기가 아니다 — 함수, 그리고 <b>모듈(*.py 파일)</b>도 바뀌는 이유가 하나가 되도록 나눈다. <span class="ic">utils.py</span> 하나에 모든 걸 몰아넣지 말 것.</span></p></div>
   </div>
   <div class="cmp">
     <div class="pane bad">
@@ -1451,6 +1460,7 @@ class RobotDuck(Duck):
       <h4>구조 · Structural</h4>
       <div class="card pi"><h3>Adapter</h3><p>맞지 않는 인터페이스를 연결</p></div>
       <div class="card pi"><h3>Decorator</h3><p>기존 객체에 기능을 덧입힌다</p></div>
+      <div class="card pi"><h3>Facade</h3><p>복잡한 내부 앞에 단순한 창구 하나</p></div>
     </div>
     <div class="col">
       <h4>행위 · Behavioral</h4>
@@ -1586,6 +1596,46 @@ class Shot:
 # 감싸는 순서대로 기능이 쌓인다
 order = Shot(Milk(Coffee()))
 order.cost()      # 4200
+</code></pre>
+  </div>
+</section>
+
+<!-- Facade -->
+<section class="slide" data-foot="Appendix · 디자인 패턴">
+  <div class="hd">
+    <div class="kicker">Appendix · 구조 패턴</div>
+    <h2 class="title">Facade</h2>
+  </div>
+  <div class="pat">
+    <aside>
+      <div><h4>의도</h4><p class="intent">복잡한 하위 시스템 앞에 단순한 창구(메서드) 하나를 둔다.</p></div>
+      <div><h4>언제 쓰나</h4><ul><li>여러 객체를 정해진 순서로 호출해야 할 때</li><li>사용하는 쪽에 내부 구조를 숨기고 싶을 때</li></ul></div>
+      <div><h4>SRP와의 관계</h4><p>책임을 잘게 나누면 클래스가 많아진다. Facade는 <b>조율만</b> 맡아, 나눈 부품을 다시 쓰기 쉽게 묶어 준다.</p></div>
+    </aside>
+<pre class="code" data-hl="10,16-19"><code>
+class Inventory:
+    def reserve(self, item): ...
+
+class Payment:
+    def charge(self, user, price): ...
+
+class Shipping:
+    def send(self, item, user): ...
+
+class OrderFacade:                # 단일 창구
+    def __init__(self):
+        self.inventory = Inventory()
+        self.payment = Payment()
+        self.shipping = Shipping()
+
+    def place_order(self, user, item, price):
+        self.inventory.reserve(item)
+        self.payment.charge(user, price)
+        self.shipping.send(item, user)
+
+
+# 호출하는 쪽은 내부를 몰라도 된다
+OrderFacade().place_order("kim", "book", 15000)
 </code></pre>
   </div>
 </section>
