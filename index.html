@@ -206,7 +206,7 @@ pre.code .ln.hl { background: rgba(129,140,248,.16); box-shadow: inset 3px 0 #81
 .agenda .appx .num { color: var(--ink-3); }
 
 /* ───────── Paradigm cards ───────── */
-.para { display: grid; grid-template-columns: 1fr 1.12fr 1fr; gap: 18px; align-items: stretch; flex: 1; min-height: 0; }
+.para { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr); gap: 18px; align-items: stretch; flex: 1; min-height: 0; }
 .para .card { display: flex; flex-direction: column; gap: 12px; padding: 22px; position: relative; }
 .para .en { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .para h3 { font-size: 23px; font-weight: 800; letter-spacing: -0.02em; margin-top: -6px; }
@@ -467,17 +467,19 @@ lee.deposit(50)        # lee는 50
       <div class="en">Functional</div>
       <h3>함수형</h3>
       <p class="desc">상태를 바꾸지 않는 순수 함수를 <b>체이닝(조합)</b>해 데이터를 흘려보낸다.</p>
-<pre class="code" data-hl="8-9"><code>
+<pre class="code" data-hl="10-11"><code>
 from functools import reduce
 
+def is_valid(amount):
+    return amount > 0
+
 def deposit(balance, amount):
-    return balance + amount   # 새 값 반환
+    return balance + amount
 
 amounts = [100, -20, 50]
-
-balance = reduce(deposit,     # 2. 누적
-    filter(lambda a: a > 0, amounts), 0)  # 1. 거르기
-# filter → reduce 체이닝: 150
+balance = reduce(deposit,
+    filter(is_valid, amounts), 0)
+# 거르기 → 누적 체이닝: 150
 </code></pre>
       <div class="chips"><span class="chip func">순수 함수</span><span class="chip func">체이닝 · 조합</span><span class="chip func">불변성</span></div>
       <div class="analogy"><b>비유</b> · 공장 라인 — 넣으면 결과가 나온다</div>
