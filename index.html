@@ -140,6 +140,7 @@ pre.code .ln.hl { background: rgba(129,140,248,.16); box-shadow: inset 3px 0 #81
 .good pre.code .ln.hl { background: rgba(16,185,129,.15); box-shadow: inset 3px 0 #10B981; }
 .tk-k { color: #C4A7FF; }
 .tk-s { color: #A6E3A1; }
+.tk-p { color: #FFB38A; }
 .tk-c { color: #858C98; }
 .tk-n { color: #FFB38A; }
 .tk-f { color: #7CC4FF; }
@@ -325,6 +326,15 @@ table.sum td.bad { color: var(--bad); }
 table.sum td.good { color: var(--good); }
 
 /* takeaways */
+.tips { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; flex: 1; min-height: 0; }
+.tips .card { padding: 24px 28px; display: flex; flex-direction: column; justify-content: space-between; }
+.tips h4 { font-size: 13px; font-weight: 700; letter-spacing: .08em; color: var(--accent); text-transform: uppercase; }
+.tips .tip { display: grid; grid-template-columns: 28px 1fr; column-gap: 8px; }
+.tips .tip .n { font-size: 17px; font-weight: 800; color: var(--accent); line-height: 1.5; }
+.tips .tip h3 { font-size: 18.5px; font-weight: 700; line-height: 1.5; }
+.tips .tip p { grid-column: 2; font-size: 15.5px; color: var(--ink-2); line-height: 1.5; }
+.tips .tip .say { grid-column: 2; margin-top: 8px; font-size: 14.5px; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
+.tips .tip .say::before { content: "› "; color: var(--accent); font-weight: 700; }
 .take { display: flex; flex-direction: column; gap: 14px; }
 .take .row { display: grid; grid-template-columns: 60px 1fr; align-items: center; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 20px 26px; }
 .take .n { font-size: 24px; font-weight: 800; color: var(--accent); }
@@ -1742,6 +1752,41 @@ CsvToDb().run()
 </section>
 
 <!-- END -->
+<!-- ═══════════════ BONUS ═══════════════ -->
+<section class="slide" data-foot="Bonus · 바이브 코딩">
+  <div class="hd tight">
+    <div class="kicker">Bonus · Claude Code로 바이브 코딩할 때</div>
+    <h2 class="title">기능만 쌓다 스파게티가 되지 않으려면</h2>
+  </div>
+  <div class="tips">
+    <div class="card">
+      <h4>명령할 때 — 구조를 먼저 정한다</h4>
+      <div class="tip"><span class="n">1</span><h3>구현 전에 설계부터 받기</h3>
+        <p>Plan 모드(<span class="ic">Shift+Tab</span>)로 클래스와 책임을 먼저 합의한 뒤 코딩시킨다.</p>
+        <div class="say">바로 짜지 말고, 클래스 구조와 각 책임부터 제안해줘</div></div>
+      <div class="tip"><span class="n">2</span><h3>설계 규칙은 CLAUDE.md에</h3>
+        <p>매번 말하지 않아도 모든 세션에 적용된다. 짧고 구체적으로.</p>
+        <div class="say">새 기능은 기존 클래스 수정 대신 새 클래스로 확장 (OCP)</div></div>
+      <div class="tip"><span class="n">3</span><h3>패턴 이름으로 말하기</h3>
+        <p>“알아서 잘”보다 이름 하나가 의도를 정확히 전달한다.</p>
+        <div class="say">결제 수단은 Strategy로, 주문 흐름은 Facade로 묶어줘</div></div>
+    </div>
+    <div class="card">
+      <h4>리팩토링할 때 — 안전하게, 조금씩</h4>
+      <div class="tip"><span class="n">1</span><h3>테스트로 현재 동작부터 고정</h3>
+        <p>안전망이 있어야 Agent가 구조를 바꿔도 깨진 걸 바로 안다.</p>
+        <div class="say">리팩토링 전에 지금 동작을 고정하는 테스트부터 써줘</div></div>
+      <div class="tip"><span class="n">2</span><h3>고치기 전에 진단 먼저</h3>
+        <p>문제 목록을 받고, 무엇을 고칠지는 사람이 고른다.</p>
+        <div class="say">이 모듈의 SOLID 위반과 God 클래스 후보를 우선순위로 정리해줘</div></div>
+      <div class="tip"><span class="n">3</span><h3>한 번에 하나, 단계마다 커밋</h3>
+        <p>기능 추가와 리팩토링을 섞지 않는다. 기능 몇 개마다 구조 점검을 습관으로.</p>
+        <div class="say">동작은 그대로 두고 Report의 저장 책임만 분리해줘</div></div>
+    </div>
+  </div>
+  <div class="banner"><span class="arrow">→</span> Agent는 <b>시킨 대로</b> 짓는다. 설계도는 사람이 쥐고, 구현을 맡기자.</div>
+</section>
+
 <section class="slide s-end" data-foot="none">
   <div class="kicker">Thank you</div>
   <h2>감사합니다</h2>
@@ -1764,14 +1809,33 @@ CsvToDb().run()
   const span = (c, t) => `<span class="tk-${c}">${esc(t)}</span>`;
   const TOKEN = /(#[^\n]*)|([rRbBfF]{0,2}(?:"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'))|(@[A-Za-z_][\w.]*)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)|(\s+)|([\s\S])/g;
 
+  // f-string: 문자열 부분은 초록, {} 안의 식은 일반 코드처럼 칠한다
+  function fstr(t) {
+    let out = "", buf = "", i = 0;
+    const flush = () => { if (buf) out += span("s", buf); buf = ""; };
+    while (i < t.length) {
+      if ((t[i] === "{" || t[i] === "}") && t[i + 1] === t[i]) { buf += t[i] + t[i]; i += 2; continue; }
+      if (t[i] === "{") {
+        let depth = 1, j = i + 1;
+        while (j < t.length && depth) { if (t[j] === "{") depth++; else if (t[j] === "}") depth--; j++; }
+        flush();
+        out += span("p", "{") + highlight(t.slice(i + 1, j - 1)) + span("p", "}");
+        i = j; continue;
+      }
+      buf += t[i++];
+    }
+    flush();
+    return out;
+  }
+
   function highlight(src) {
     let out = "", m, prev = "";
-    TOKEN.lastIndex = 0;
-    while ((m = TOKEN.exec(src))) {
+    const re = new RegExp(TOKEN);   // f-string 재귀 호출용으로 호출마다 새 정규식
+    while ((m = re.exec(src))) {
       const [t, com, str, dec, num, id, ws] = m;
       if (ws) { out += t; continue; }
       if (com) out += span("c", t);
-      else if (str) out += span("s", t);
+      else if (str) out += /^[rRbB]?[fF]/.test(t) ? fstr(t) : span("s", t);
       else if (dec) out += span("d", t);
       else if (num) out += span("n", t);
       else if (id) {
