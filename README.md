@@ -24,6 +24,6 @@
 | 04 SOLID | God 클래스(“class만 쓰면 끝일까?”) → 5원칙을 원칙마다 위반/준수 코드로 비교 → 요약표 |
 | 05 정리 | 과설계 주의, 상속보다 조합 · 핵심 요약 |
 | Appendix | Factory, Singleton, Adapter, Decorator, Facade, Strategy, Observer, Template Method |
-| Bonus | Claude Code로 바이브 코딩할 때 OOP를 지키도록 명령하는 팁 · 리팩토링 팁 |
+| Bonus | AI Agent로 바이브 코딩할 때 작업 중 명령 팁(설계 먼저 · 디자인 패턴 · 진단 먼저) · PR 전 필수 명령(데드코드 정리 · 다른 Agent 교차 리뷰) |
 
 폰트: [Pretendard](https://github.com/orioncactus/pretendard) (본문), [JetBrains Mono](https://www.jetbrains.com/lp/mono/) (코드). 둘 다 CDN에서 불러오므로 온라인 환경에서 여는 것이 가장 좋습니다(오프라인이면 시스템 폰트로 대체됩니다).

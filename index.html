@@ -335,6 +335,12 @@ table.sum td.good { color: var(--good); }
 .tips .tip p { grid-column: 2; font-size: 15.5px; color: var(--ink-2); line-height: 1.5; }
 .tips .tip .say { grid-column: 2; margin-top: 8px; font-size: 14.5px; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
 .tips .tip .say::before { content: "› "; color: var(--accent); font-weight: 700; }
+.tips .must { position: relative; border: 2px solid var(--accent); box-shadow: 0 24px 48px -24px rgba(79,70,229,.45); justify-content: flex-start; gap: 30px; }
+.tips .must .badge-must {
+  position: absolute; top: -13px; right: 18px;
+  background: var(--accent); color: #fff; font-size: 12px; font-weight: 700;
+  padding: 5px 11px; border-radius: 999px;
+}
 .take { display: flex; flex-direction: column; gap: 14px; }
 .take .row { display: grid; grid-template-columns: 60px 1fr; align-items: center; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 20px 26px; }
 .take .n { font-size: 24px; font-weight: 800; color: var(--accent); }
@@ -1755,36 +1761,34 @@ CsvToDb().run()
 <!-- ═══════════════ BONUS ═══════════════ -->
 <section class="slide" data-foot="Bonus · 바이브 코딩">
   <div class="hd tight">
-    <div class="kicker">Bonus · Claude Code로 바이브 코딩할 때</div>
+    <div class="kicker">Bonus · AI Agent로 바이브 코딩할 때</div>
     <h2 class="title">기능만 쌓다 스파게티가 되지 않으려면</h2>
   </div>
   <div class="tips">
     <div class="card">
-      <h4>명령할 때 — 구조를 먼저 정한다</h4>
+      <h4>작업 중 — 설계는 사람이 쥔다</h4>
       <div class="tip"><span class="n">1</span><h3>구현 전에 설계부터 받기</h3>
-        <p>Plan 모드(<span class="ic">Shift+Tab</span>)로 클래스와 책임을 먼저 합의한 뒤 코딩시킨다.</p>
+        <p>Plan 모드(<span class="ic">Shift+Tab</span>)로 클래스 · 책임부터 합의한다.</p>
         <div class="say">바로 짜지 말고, 클래스 구조와 각 책임부터 제안해줘</div></div>
-      <div class="tip"><span class="n">2</span><h3>설계 규칙은 CLAUDE.md에</h3>
-        <p>매번 말하지 않아도 모든 세션에 적용된다. 짧고 구체적으로.</p>
-        <div class="say">새 기능은 기존 클래스 수정 대신 새 클래스로 확장 (OCP)</div></div>
-      <div class="tip"><span class="n">3</span><h3>패턴 이름으로 말하기</h3>
-        <p>“알아서 잘”보다 이름 하나가 의도를 정확히 전달한다.</p>
-        <div class="say">결제 수단은 Strategy로, 주문 흐름은 Facade로 묶어줘</div></div>
-    </div>
-    <div class="card">
-      <h4>리팩토링할 때 — 안전하게, 조금씩</h4>
-      <div class="tip"><span class="n">1</span><h3>테스트로 현재 동작부터 고정</h3>
-        <p>안전망이 있어야 Agent가 구조를 바꿔도 깨진 걸 바로 안다.</p>
-        <div class="say">리팩토링 전에 지금 동작을 고정하는 테스트부터 써줘</div></div>
-      <div class="tip"><span class="n">2</span><h3>고치기 전에 진단 먼저</h3>
-        <p>문제 목록을 받고, 무엇을 고칠지는 사람이 고른다.</p>
+      <div class="tip"><span class="n">2</span><h3>바뀔 곳은 디자인 패턴으로</h3>
+        <p>무엇이 늘어날지 알려주고 패턴으로 설계시킨다.</p>
+        <div class="say">XXX 기능은 종류가 계속 추가될 거야. 적절한 디자인 패턴으로 설계해줘</div></div>
+      <div class="tip"><span class="n">3</span><h3>고치기 전에 진단 먼저</h3>
+        <p>문제 목록부터 받고, 고칠 것은 사람이 고른다.</p>
         <div class="say">이 모듈의 SOLID 위반과 God 클래스 후보를 우선순위로 정리해줘</div></div>
-      <div class="tip"><span class="n">3</span><h3>한 번에 하나, 단계마다 커밋</h3>
-        <p>기능 추가와 리팩토링을 섞지 않는다. 기능 몇 개마다 구조 점검을 습관으로.</p>
-        <div class="say">동작은 그대로 두고 Report의 저장 책임만 분리해줘</div></div>
+    </div>
+    <div class="card must">
+      <span class="badge-must">필수</span>
+      <h4>PR 올리기 전 — 반드시 시킨다</h4>
+      <div class="tip"><span class="n">4</span><h3>구현하며 생긴 데드코드 정리</h3>
+        <p>시행착오로 남은 함수 · 분기 · 주석 처리된 코드를 커밋 범위를 지정해 한 번에 지운다.</p>
+        <div class="say">abcdef 커밋부터 ghijkl 커밋까지 구현하며 생긴 데드코드를 모두 정리해줘</div></div>
+      <div class="tip"><span class="n">5</span><h3>다른 Agent에게 교차 리뷰 받기</h3>
+        <p>코드를 짠 Agent가 아닌 다른 Agent · 모델(Claude Code ↔ Opencode)에게 점수로 평가받고, 낮은 항목은 고친 뒤 PR.</p>
+        <div class="say">abcdef 커밋부터 ghijkl 커밋까지의 변경점이 SOLID 원칙을 잘 지키는지 리뷰하고 점수를 매겨줘</div></div>
     </div>
   </div>
-  <div class="banner"><span class="arrow">→</span> Agent는 <b>시킨 대로</b> 짓는다. 설계도는 사람이 쥐고, 구현을 맡기자.</div>
+  <div class="banner"><span class="arrow">→</span> <b>4 · 5를 거치지 않은 PR은 올리지 않는다.</b> 기능은 Agent가, 구조는 사람이 책임진다.</div>
 </section>
 
 <section class="slide s-end" data-foot="none">
